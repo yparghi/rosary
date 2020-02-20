@@ -5,6 +5,6 @@ function rosary_start() {
 
 function load_initial_game_state() {
   display = document.getElementById("gameDisplay");
-  display.innerHTML = "Started game!";
+  display.innerHTML = "Loading " + gameName + "...";
 }
 
