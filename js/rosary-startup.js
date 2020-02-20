@@ -4,7 +4,16 @@ function rosary_start() {
 }
 
 function load_initial_game_state() {
+  room = gameState["currentRoom"];
+
+  displayString = room.desc;
+  displayString += "\n\n";
+  displayString += "Exits are: ";
+  for (i = 0; i < room.exits.length; ++i) {
+      displayString += room.exits[i].shortName + ", ";
+  }
+
   display = document.getElementById("gameDisplay");
-  display.innerHTML = gameState['currentRoom'].desc;
+  display.innerHTML = displayString;
 }
 
