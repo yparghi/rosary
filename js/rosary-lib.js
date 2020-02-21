@@ -135,7 +135,11 @@ const getCircularReplacer = () => {
   return (key, value) => {
     if (typeof value === "object" && value !== null) {
       if (seen.has(value)) {
-        return;
+				if (value.hasOwnProperty("shortName")) {
+          return "[Circular: " + value.shortName + "]";
+        } else {
+          return "[Circular]";
+        }
       }
       seen.add(value);
     }
