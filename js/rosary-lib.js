@@ -1,4 +1,6 @@
 function parseCommand() {
+	clearErrorMessage();
+
   // TODO: Pass this in somehow, don"t grab it from the DOM. And write tests.
   input = document.getElementById("gameInput").value.toLowerCase();
   doInternalParsing(input);
@@ -150,6 +152,12 @@ function displayError(message) {
   // TODO: Find a better way than grabbing from the DOM.
   errorDisplay = document.getElementById("gameErrorDisplay");
   errorDisplay.innerHTML = message;
+}
+
+function clearErrorMessage() {
+  // TODO: Find a better way than grabbing from the DOM.
+  errorDisplay = document.getElementById("gameErrorDisplay");
+  errorDisplay.innerHTML = "";
 }
 
 const PREPOSITIONS = [
