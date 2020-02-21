@@ -15,10 +15,34 @@ function doInternalParsing(text) {
 }
 
 function parseCommandFromWords(words) {
+  parsedObj = new Object();
+
   verb = words[0];
+  if (!VERB_TYPES.has(verb)) {
+    displayError('Unknown verb: ' + verb);
+    return;
+  }
+
+  parsedObj.verb = VERB_TYPES.get(verb);
+  console.log('Parsed command: ' + objToString(parsedObj));
+}
+
+function objToString(obj) {
+  return JSON.stringify(obj, null, 4);
+}
+
+// TODO: Clear the input box?
+function displayError(message) {
+  // TODO: Find a better way than grabbing from the DOM.
+  errorDisplay = document.getElementById("gameErrorDisplay");
+  errorDisplay.innerHTML = message;
 }
 
 const PREPOSITIONS = [
   "to",
 ];
+
+const VERB_TYPES = new Map();
+VERB_TYPES.set('go', 'GO');
+VERB_TYPES.set('enter', 'GO');
 
