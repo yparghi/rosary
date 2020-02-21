@@ -16,5 +16,5 @@ roomFoyer.exits = [ roomLivingRoom ];
 roomLivingRoom.exits = [ roomFoyer ];
 
 // Set initial game state
-gameState['currentRoom'] = roomFoyer;
+gameState['initialRoom'] = roomFoyer;
 

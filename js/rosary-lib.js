@@ -1,5 +1,5 @@
 function parseCommand() {
-  // TODO: Pass this in somehow, don't grab it from the DOM. And write tests.
+  // TODO: Pass this in somehow, don"t grab it from the DOM. And write tests.
   input = document.getElementById("gameInput").value.toLowerCase();
   doInternalParsing(input);
 }
@@ -9,7 +9,7 @@ function doInternalParsing(text) {
   words = words.filter(function(word) {
     return !PREPOSITIONS.includes(word);
   });
-  console.log('Words: ', words);
+  console.log("Words: ", words);
 
   parseCommandFromWords(words);
 }
@@ -19,7 +19,7 @@ function parseCommandFromWords(words) {
 
   verb = words[0];
   if (!VERB_TYPES.has(verb)) {
-    displayError('Unknown verb: ' + verb);
+    displayError("Unknown verb: " + verb);
     return;
   }
 
@@ -29,13 +29,48 @@ function parseCommandFromWords(words) {
   parsedObj.objOne = identifyResult.objOne;
   parsedObj.objTwo = identifyResult.objTwo;
 
+  console.log("Parsed command: " + objToString(parsedObj));
   if (identifyResult.error !== null) {
     displayError(identifyResult.error);
+  } else {
+    performCommand(parsedObj);
   }
-  console.log('Parsed command: ' + objToString(parsedObj));
 }
 
-// TODO: Figure out the general system of 'registering' the existence or
+
+function performCommand(commandObj) {
+  if (commandObj.verb === "GO") {
+    performGo(commandObj);
+  } else {
+    displayError("Sorry, I don't know how to do that.");
+  }
+}
+
+
+function performGo(commandObj) {
+  if (commandObj.objOne === null || commandObj.objTwo !== null) {
+    displayError("Failed to parse 'go' command!");
+  } else {
+    changeRoom(commandObj.objOne);
+  }
+}
+
+function changeRoom(roomObj) {
+  gameState["currentRoom"] = roomObj;
+
+  displayString = roomObj.desc;
+  displayString += "\n\n";
+  displayString += "Exits are: ";
+  for (let i = 0; i < roomObj.exits.length; ++i) {
+      displayString += roomObj.exits[i].shortName.toUpperCase() + ", ";
+  }
+
+  display = document.getElementById("gameDisplay");
+  display.innerHTML = displayString;
+}
+
+
+// TODO: Figure out the general system of "registering" the existence or
 // nonexistence of objects, rooms, characters, etc.
 function identifyObjects(words) {
   result = new Object();
@@ -44,16 +79,16 @@ function identifyObjects(words) {
   result.error = null;
 
   // This is temporary.
-  allGameObjects = gameState["currentRoom"].exits.map(function(room) {
-    return room.shortName.toLowerCase();
-  });
+  allGameObjects = gameState["currentRoom"].exits;
 
   for (let i = 0; i < words.length; i++) {
-    console.log('i: ' + i);
+    console.log("i: " + i);
     match = lookForOneWordMatches(allGameObjects, words[i]);
-    console.log('One-word match result: ' + match);
+    console.log("One-word match result: " + match);
     if (match === null && i < words.length - 1) {
       match = lookForTwoWordMatches(allGameObjects, words[i], words[i+1]);
+    } else {
+      console.log("SKIPPING two-word check.");
     }
 
     if (match !== null) {
@@ -62,7 +97,7 @@ function identifyObjects(words) {
       } else if (result.objTwo === null) {
         result.objTwo = match;
       } else {
-        result.error = '3+ objs TODO';
+        result.error = "3+ objs TODO";
         return result;
       }
     }
@@ -77,10 +112,10 @@ function identifyObjects(words) {
 // TODO: Maybe we should have a base GameObject class with methods like
 // getSynonyms(), for these comparisons?
 function lookForOneWordMatches(objects, word) {
-  console.log('Matching: ' + word);
-  console.log('Matching: ' + JSON.stringify(objects));
+  console.log("Matching: " + word);
+  console.log("Matching: " + objToString(objects));
   for (let i = 0; i < objects.length; i++) {
-    if (word.localeCompare(objects[i]) === 0) {
+    if (word.localeCompare(objects[i].shortName) === 0) {
       return objects[i];
     }
   }
@@ -92,8 +127,22 @@ function lookForTwoWordMatches(objects, word1, word2) {
   return lookForOneWordMatches(objects, word);
 }
 
+// Thanks to: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cyclic_object_value#Examples
+const getCircularReplacer = () => {
+  const seen = new WeakSet();
+  return (key, value) => {
+    if (typeof value === "object" && value !== null) {
+      if (seen.has(value)) {
+        return;
+      }
+      seen.add(value);
+    }
+    return value;
+  };
+};
+
 function objToString(obj) {
-  return JSON.stringify(obj, null, 4);
+  return JSON.stringify(obj, getCircularReplacer(), 4);
 }
 
 // TODO: Clear the input box?
@@ -108,6 +157,6 @@ const PREPOSITIONS = [
 ];
 
 const VERB_TYPES = new Map();
-VERB_TYPES.set('go', 'GO');
-VERB_TYPES.set('enter', 'GO');
+VERB_TYPES.set("go", "GO");
+VERB_TYPES.set("enter", "GO");
 
