@@ -9,8 +9,8 @@ function load_initial_game_state() {
   displayString = room.desc;
   displayString += "\n\n";
   displayString += "Exits are: ";
-  for (i = 0; i < room.exits.length; ++i) {
-      displayString += room.exits[i].shortName + ", ";
+  for (let i = 0; i < room.exits.length; ++i) {
+      displayString += room.exits[i].shortName.toUpperCase() + ", ";
   }
 
   display = document.getElementById("gameDisplay");
