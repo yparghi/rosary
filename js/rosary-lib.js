@@ -61,7 +61,14 @@ function changeRoom(roomObj) {
   gameState["currentRoom"] = roomObj;
 
   displayString = roomObj.desc;
-  displayString += "\n\n";
+
+  displayString += "<br/><br/>";
+  displayString += "You see these objects: ";
+  for (let i = 0; i < roomObj.objects.length; ++i) {
+      displayString += roomObj.objects[i].shortName.toUpperCase() + ", ";
+  }
+
+  displayString += "<br/><br/>";
   displayString += "Exits are: ";
   for (let i = 0; i < roomObj.exits.length; ++i) {
       displayString += roomObj.exits[i].shortName.toUpperCase() + ", ";
@@ -181,6 +188,8 @@ class GameObject {
 class GameRoom extends GameObject {
   constructor(shortName) {
     super(shortName);
+    this.exits = [];
+    this.objects = [];
   }
 
   findAllObjects() {

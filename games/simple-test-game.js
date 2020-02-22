@@ -13,6 +13,10 @@ roomLivingRoom.desc = "You are in the living room."
 roomFoyer.exits = [ roomLivingRoom ];
 roomLivingRoom.exits = [ roomFoyer ];
 
+// Add room objects
+sponge = new GameObject("sponge");
+roomFoyer.objects = [ sponge ];
+
 // Set initial game state
 gameState['initialRoom'] = roomFoyer;
 
