@@ -61,8 +61,10 @@ function performGo(commandObj) {
 }
 
 function performLook(commandObj) {
-  if (commandObj.objOne === null && commandObj.objTwo == null) {
+  if (commandObj.objOne === null && commandObj.objTwo === null) {
     displayText(gameState["currentRoom"].getDisplayText());
+  } else if (commandObj.objOne !== null && commandObj.objTwo === null) {
+    displayText(commandObj.objOne.getDisplayText());
   }
 }
 
@@ -177,6 +179,10 @@ function clearErrorMessage() {
 class GameObject {
   constructor(shortName) {
     this.shortName = shortName;
+  }
+
+  getDisplayText() {
+    return this.desc;
   }
 }
 

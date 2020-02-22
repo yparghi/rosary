@@ -15,6 +15,7 @@ roomLivingRoom.exits = [ roomFoyer ];
 
 // Add room objects
 sponge = new GameObject("sponge");
+sponge.desc = "It is yellow and porous."
 roomFoyer.objects = [ sponge ];
 
 // Set initial game state
