@@ -80,8 +80,7 @@ function identifyObjects(words) {
   result.objTwo = null;
   result.error = null;
 
-  // This is temporary.
-  allGameObjects = gameState["currentRoom"].exits;
+  allGameObjects = findAllCurrentObjects();
 
   for (let i = 0; i < words.length; i++) {
     console.log("i: " + i);
@@ -109,6 +108,12 @@ function identifyObjects(words) {
     result.error = "No matching objects found!";
   }
   return result;
+}
+
+function findAllCurrentObjects() {
+  room = gameState["currentRoom"];
+  return room.findAllObjects();
+  //return gameState["currentRoom"].exits;
 }
 
 // TODO: Maybe we should have a base GameObject class with methods like
@@ -164,6 +169,31 @@ function clearErrorMessage() {
   errorDisplay.innerHTML = "";
 }
 
+
+/////// CLASSES
+
+class GameObject {
+  constructor(shortName) {
+    this.shortName = shortName;
+  }
+}
+
+class GameRoom extends GameObject {
+  constructor(shortName) {
+    super(shortName);
+  }
+
+  findAllObjects() {
+    // This is temporary.
+    return this.exits;
+  }
+}
+
+/////// END CLASSES
+
+
+
+/////// GRAMMAR CONSTANTS
 const PREPOSITIONS = [
   "to",
 ];
@@ -171,4 +201,5 @@ const PREPOSITIONS = [
 const VERB_TYPES = new Map();
 VERB_TYPES.set("go", "GO");
 VERB_TYPES.set("enter", "GO");
+/////// END GRAMMAR CONSTANTS
 

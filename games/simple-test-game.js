@@ -3,13 +3,11 @@ var gameName = "Simple Test Game";
 var gameState = new Object();
 
 // Declare rooms
-roomFoyer = new Object();
+roomFoyer = new GameRoom("foyer");
 roomFoyer.desc = "You are in the foyer.";
-roomFoyer.shortName = "foyer";
 
-roomLivingRoom = new Object();
+roomLivingRoom = new GameRoom("living room");
 roomLivingRoom.desc = "You are in the living room."
-roomLivingRoom.shortName = "living room";
 
 // Connect rooms
 roomFoyer.exits = [ roomLivingRoom ];
