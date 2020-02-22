@@ -16,6 +16,8 @@ function doInternalParsing(text) {
   parseCommandFromWords(words);
 }
 
+// TODO: What if a 'look' command matches no object? It shouldn't just be
+// parsed as 'look' i.e. current room -- it should show an error.
 function parseCommandFromWords(words) {
   parsedObj = new Object();
 
@@ -56,7 +58,7 @@ function performGo(commandObj) {
     displayError("Failed to parse 'go' command!");
   } else {
     // TODO: Handle if you 'go' to the current room.
-    changeRoom(commandObj.objOne);
+    changeRoom(commandObj.objOne.getRoom());
   }
 }
 
@@ -214,6 +216,22 @@ class GameRoom extends GameObject {
     }
 
     return displayString;
+  }
+}
+
+class RoomExit extends GameObject {
+  constructor(room) {
+    super(room.shortName);
+    this.room = room;
+  }
+
+  // For 'go' commands
+  getRoom() {
+    return this.room;
+  }
+
+  getDisplayText() {
+    return "You can't see from here. Just go.";
   }
 }
 

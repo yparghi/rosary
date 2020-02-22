@@ -10,8 +10,8 @@ roomLivingRoom = new GameRoom("living room");
 roomLivingRoom.desc = "You are in the living room."
 
 // Connect rooms
-roomFoyer.exits = [ roomLivingRoom ];
-roomLivingRoom.exits = [ roomFoyer ];
+roomFoyer.exits = [ new RoomExit(roomLivingRoom) ];
+roomLivingRoom.exits = [ new RoomExit(roomFoyer) ];
 
 // Add room objects
 sponge = new GameObject("sponge");
