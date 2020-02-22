@@ -43,6 +43,8 @@ function parseCommandFromWords(words) {
 function performCommand(commandObj) {
   if (commandObj.verb === "GO") {
     performGo(commandObj);
+  } else if (commandObj.verb === "LOOK") {
+    performLook(commandObj);
   } else {
     displayError("Sorry, I don't know how to do that.");
   }
@@ -53,29 +55,26 @@ function performGo(commandObj) {
   if (commandObj.objOne === null || commandObj.objTwo !== null) {
     displayError("Failed to parse 'go' command!");
   } else {
+    // TODO: Handle if you 'go' to the current room.
     changeRoom(commandObj.objOne);
+  }
+}
+
+function performLook(commandObj) {
+  if (commandObj.objOne === null && commandObj.objTwo == null) {
+    displayText(gameState["currentRoom"].getDisplayText());
   }
 }
 
 function changeRoom(roomObj) {
   gameState["currentRoom"] = roomObj;
+  displayText(roomObj.getDisplayText());
+}
 
-  displayString = roomObj.desc;
 
-  displayString += "<br/><br/>";
-  displayString += "You see these objects: ";
-  for (let i = 0; i < roomObj.objects.length; ++i) {
-      displayString += roomObj.objects[i].shortName.toUpperCase() + ", ";
-  }
-
-  displayString += "<br/><br/>";
-  displayString += "Exits are: ";
-  for (let i = 0; i < roomObj.exits.length; ++i) {
-      displayString += roomObj.exits[i].shortName.toUpperCase() + ", ";
-  }
-
+function displayText(message) {
   display = document.getElementById("gameDisplay");
-  display.innerHTML = displayString;
+  display.innerHTML = message;
 }
 
 
@@ -111,16 +110,12 @@ function identifyObjects(words) {
     }
   }
 
-  if (result.objOne === null) {
-    result.error = "No matching objects found!";
-  }
   return result;
 }
 
 function findAllCurrentObjects() {
   room = gameState["currentRoom"];
   return room.findAllObjects();
-  //return gameState["currentRoom"].exits;
 }
 
 // TODO: Maybe we should have a base GameObject class with methods like
@@ -193,8 +188,26 @@ class GameRoom extends GameObject {
   }
 
   findAllObjects() {
-    // This is temporary.
-    return this.exits;
+    return this.exits
+        .concat(this.objects);
+  }
+
+  getDisplayText() {
+    var displayString = this.desc;
+
+    displayString += "<br/><br/>";
+    displayString += "You see these objects: ";
+    for (let i = 0; i < this.objects.length; ++i) {
+        displayString += this.objects[i].shortName.toUpperCase() + ", ";
+    }
+
+    displayString += "<br/><br/>";
+    displayString += "Exits are: ";
+    for (let i = 0; i < this.exits.length; ++i) {
+        displayString += this.exits[i].shortName.toUpperCase() + ", ";
+    }
+
+    return displayString;
   }
 }
 
@@ -204,11 +217,14 @@ class GameRoom extends GameObject {
 
 /////// GRAMMAR CONSTANTS
 const PREPOSITIONS = [
+  "at",
   "to",
 ];
 
 const VERB_TYPES = new Map();
 VERB_TYPES.set("go", "GO");
 VERB_TYPES.set("enter", "GO");
+VERB_TYPES.set("look", "LOOK");
+VERB_TYPES.set("see", "LOOK");
 /////// END GRAMMAR CONSTANTS
 
