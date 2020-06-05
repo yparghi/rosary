@@ -77,7 +77,7 @@ function changeRoom(roomObj) {
 
 function startInitialRoom(roomObj) {
   gameState["currentRoom"] = roomObj;
-  displayText(gameState.introText + "<br/><br/>" + roomObj.getDisplayText());
+  displayText(gameState.introText + "<br/>" + roomObj.getDisplayText());
 }
 
 function displayText(message) {
