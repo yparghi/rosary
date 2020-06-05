@@ -4,6 +4,6 @@ function rosary_start() {
 }
 
 function load_initial_game_state() {
-  changeRoom(gameState["initialRoom"]);
+  startInitialRoom(gameState["initialRoom"]);
 }
 
