@@ -47,6 +47,8 @@ function performCommand(commandObj) {
     performGo(commandObj);
   } else if (commandObj.verb === "LOOK") {
     performLook(commandObj);
+  } else if (commandObj.verb === "TALK") {
+    performTalk(commandObj);
   } else {
     displayError("Sorry, I don't know how to do that.");
   }
@@ -68,6 +70,20 @@ function performLook(commandObj) {
   } else if (commandObj.objOne !== null && commandObj.objTwo === null) {
     displayText(commandObj.objOne.getDisplayText());
   }
+}
+
+function performTalk(commandObj) {
+  if (commandObj.objOne === null || commandObj.objTwo !== null) {
+    displayError("Failed to parse 'talk' command!");
+    return;
+  }
+
+  if (!commandObj.objOne.isTalkable()) {
+      displayText("It has little to say.");
+      return;
+  }
+
+  displayText(commandObj.objOne.doTalk());
 }
 
 function changeRoom(roomObj) {
@@ -190,6 +206,10 @@ class GameObject {
   getDisplayText() {
     return this.desc;
   }
+
+  isTalkable() {
+    return false;
+  }
 }
 
 class GameRoom extends GameObject {
@@ -239,6 +259,22 @@ class RoomExit extends GameObject {
   }
 }
 
+
+class Character extends GameObject {
+  constructor(shortName, conversations) {
+    super(shortName);
+    this.conversations = conversations;
+  }
+
+  isTalkable() {
+    return true;
+  }
+
+  doTalk() {
+    return this.conversations["default"];
+  }
+}
+
 /////// END CLASSES
 
 
@@ -254,5 +290,6 @@ VERB_TYPES.set("go", "GO");
 VERB_TYPES.set("enter", "GO");
 VERB_TYPES.set("look", "LOOK");
 VERB_TYPES.set("see", "LOOK");
+VERB_TYPES.set("talk", "TALK");
 /////// END GRAMMAR CONSTANTS
 
