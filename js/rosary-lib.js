@@ -195,6 +195,16 @@ function clearErrorMessage() {
   errorDisplay.innerHTML = "";
 }
 
+// Helper utility for state dict .get() behavior
+function stateGet(key, defaultValue) {
+  state = gameObj.state;
+  if (key in state) {
+    return state[key];
+  } else {
+    return defaultValue;
+  }
+}
+
 
 /////// CLASSES
 
@@ -283,7 +293,8 @@ class Character extends GameObject {
   }
 
   doTalk() {
-    return this.conversations["default"];
+    // NOTE: Is a function w/ side effects really the best way?...
+    return this.conversations["default"]();
   }
 }
 
