@@ -1,6 +1,6 @@
 // TODO: Find a better way than a global var?
 var gameName = "Simple Test Game";
-var gameState = new Object();
+var gameObj = new Object();
 
 // Declare rooms
 roomFoyer = new GameRoom("foyer");
@@ -19,5 +19,5 @@ sponge.desc = "It is yellow and porous."
 roomFoyer.objects = [ sponge ];
 
 // Set initial game state
-gameState['initialRoom'] = roomFoyer;
+gameObj['initialRoom'] = roomFoyer;
 

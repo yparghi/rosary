@@ -66,7 +66,7 @@ function performGo(commandObj) {
 
 function performLook(commandObj) {
   if (commandObj.objOne === null && commandObj.objTwo === null) {
-    displayText(gameState["currentRoom"].getDisplayText());
+    displayText(gameObj["currentRoom"].getDisplayText());
   } else if (commandObj.objOne !== null && commandObj.objTwo === null) {
     displayText(commandObj.objOne.getDisplayText());
   }
@@ -87,13 +87,13 @@ function performTalk(commandObj) {
 }
 
 function changeRoom(roomObj) {
-  gameState["currentRoom"] = roomObj;
+  gameObj["currentRoom"] = roomObj;
   displayText(roomObj.getDisplayText());
 }
 
 function startInitialRoom(roomObj) {
-  gameState["currentRoom"] = roomObj;
-  displayText(gameState.introText + "<br/>" + roomObj.getDisplayText());
+  gameObj["currentRoom"] = roomObj;
+  displayText(gameObj.introText + "<br/>" + roomObj.getDisplayText());
 }
 
 function displayText(message) {
@@ -138,7 +138,7 @@ function identifyObjects(words) {
 }
 
 function findAllCurrentObjects() {
-  room = gameState["currentRoom"];
+  room = gameObj["currentRoom"];
   return room.findAllObjects();
 }
 
@@ -210,6 +210,10 @@ class GameObject {
   isTalkable() {
     return false;
   }
+
+  isVisible() {
+    return true;
+  }
 }
 
 class GameRoom extends GameObject {
@@ -230,13 +234,21 @@ class GameRoom extends GameObject {
     displayString += "<br/><br/>";
     displayString += "You see these objects: ";
     for (let i = 0; i < this.objects.length; ++i) {
-        displayString += this.objects[i].shortName.toUpperCase() + ", ";
+        let object = this.objects[i];
+        if (!object.isVisible()) {
+            continue;
+        }
+        displayString += object.shortName.toUpperCase() + ", ";
     }
 
     displayString += "<br/><br/>";
     displayString += "Exits are: ";
     for (let i = 0; i < this.exits.length; ++i) {
-        displayString += this.exits[i].shortName.toUpperCase() + ", ";
+        let exit = this.exits[i];
+        if (!exit.isVisible()) {
+            continue;
+        }
+        displayString += exit.shortName.toUpperCase() + ", ";
     }
 
     return displayString;
