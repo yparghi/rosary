@@ -49,6 +49,8 @@ function performCommand(commandObj) {
     performLook(commandObj);
   } else if (commandObj.verb === "TALK") {
     performTalk(commandObj);
+  } else if (commandObj.verb === "USE") {
+    performUse(commandObj);
   } else {
     displayError("Sorry, I don't know how to do that.");
   }
@@ -84,6 +86,16 @@ function performTalk(commandObj) {
   }
 
   displayText(commandObj.objOne.doTalk());
+}
+
+function performUse(commandObj) {
+  // ...Until we need 'use X with Y'?
+  if (commandObj.objOne === null || commandObj.objTwo !== null) {
+    displayError("Failed to parse 'use' command!");
+  } else {
+    // TODO: Handle if you 'go' to the current room.
+    displayText(commandObj.objOne.doInteract(commandObj));
+  }
 }
 
 function changeRoom(roomObj) {
@@ -224,6 +236,12 @@ class GameObject {
   isVisible() {
     return true;
   }
+
+  // Should this supplant doTalk() and similar methods?
+  doInteract(commandObj) {
+    return "It is unresponsive."
+  }
+
 }
 
 class GameRoom extends GameObject {
@@ -314,5 +332,6 @@ VERB_TYPES.set("enter", "GO");
 VERB_TYPES.set("look", "LOOK");
 VERB_TYPES.set("see", "LOOK");
 VERB_TYPES.set("talk", "TALK");
+VERB_TYPES.set("use", "USE");
 /////// END GRAMMAR CONSTANTS
 
