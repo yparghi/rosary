@@ -68,7 +68,7 @@ function performGo(commandObj) {
 
 function performLook(commandObj) {
   if (commandObj.objOne === null && commandObj.objTwo === null) {
-    displayText(gameObj["currentRoom"].getDisplayText());
+    displayText(world.currentRoom.getDisplayText());
   } else if (commandObj.objOne !== null && commandObj.objTwo === null) {
     displayText(commandObj.objOne.getDisplayText());
   }
@@ -99,13 +99,13 @@ function performUse(commandObj) {
 }
 
 function changeRoom(roomObj) {
-  gameObj["currentRoom"] = roomObj;
+  world.currentRoom = roomObj;
   displayText(roomObj.getDisplayText());
 }
 
 function startInitialRoom(roomObj) {
-  gameObj["currentRoom"] = roomObj;
-  displayText(gameObj.introText + "<br/>" + roomObj.getDisplayText());
+  world.currentRoom = roomObj;
+  displayText(world.introText + "<br/>" + roomObj.getDisplayText());
 }
 
 function displayText(message) {
@@ -150,7 +150,7 @@ function identifyObjects(words) {
 }
 
 function findAllCurrentObjects() {
-  room = gameObj["currentRoom"];
+  room = world.currentRoom;
   return room.findAllObjects();
 }
 
@@ -209,7 +209,7 @@ function clearErrorMessage() {
 
 // Helper utility for state dict .get() behavior
 function stateGet(key, defaultValue) {
-  state = gameObj.state;
+  state = world.state;
   if (key in state) {
     return state[key];
   } else {
@@ -219,6 +219,18 @@ function stateGet(key, defaultValue) {
 
 
 /////// CLASSES
+
+// The entire game, in an object.
+class GameWorld {
+    constructor(gameName) {
+      this.gameName = gameName;
+      this.state = {};
+      this.inventory = [];
+      this.introText = "TODO: Write an intro.";
+      this.initialRoom = null;
+      this.currentRoom = null;
+    }
+}
 
 class GameObject {
   constructor(shortName) {
@@ -316,6 +328,12 @@ class Character extends GameObject {
   }
 }
 
+
+class InventoryItem extends GameObject {
+    constructor(shortName) {
+        super(shortName);
+    }
+}
 /////// END CLASSES
 
 
