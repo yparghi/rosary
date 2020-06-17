@@ -19,26 +19,26 @@ function doInternalParsing(text) {
 // TODO: What if a 'look' command matches no object? It shouldn't just be
 // parsed as 'look' i.e. current room -- it should show an error.
 function parseCommandFromWords(words) {
-  parsedObj = new Object();
+    parsedObj = new Object();
 
-  verb = words[0];
-  if (!VERB_TYPES.has(verb)) {
-    displayError("Unknown verb: " + verb);
-    return;
-  }
+    verb = words[0];
+    if (!VERB_TYPES.has(verb)) {
+      displayError("Unknown verb: " + verb);
+      return;
+    }
 
-  parsedObj.verb = VERB_TYPES.get(verb);
+    parsedObj.verb = VERB_TYPES.get(verb);
 
-  var identifyResult = identifyObjects(words.slice(1));
-  parsedObj.objOne = identifyResult.objOne;
-  parsedObj.objTwo = identifyResult.objTwo;
+    var identifyResult = identifyObjects(words.slice(1));
+    parsedObj.objOne = identifyResult.objOne;
+    parsedObj.objTwo = identifyResult.objTwo;
 
-  console.log("Parsed command: " + objToString(parsedObj));
-  if (identifyResult.error !== null) {
-    displayError(identifyResult.error);
-  } else {
-    performCommand(parsedObj);
-  }
+    console.log("Parsed command: " + objToString(parsedObj));
+    if (identifyResult.error !== null) {
+      displayError(identifyResult.error);
+    } else {
+      performCommand(parsedObj);
+    }
 }
 
 
@@ -51,6 +51,10 @@ function performCommand(commandObj) {
     performTalk(commandObj);
   } else if (commandObj.verb === "USE") {
     performUse(commandObj);
+  } else if (commandObj.verb === "TAKE") {
+    performTake(commandObj);
+  } else if (commandObj.verb === "VIEW_INVENTORY") {
+    performInv(commandObj);
   } else {
     displayError("Sorry, I don't know how to do that.");
   }
@@ -93,10 +97,27 @@ function performUse(commandObj) {
   if (commandObj.objOne === null || commandObj.objTwo !== null) {
     displayError("Failed to parse 'use' command!");
   } else {
-    // TODO: Handle if you 'go' to the current room.
     displayText(commandObj.objOne.doInteract(commandObj));
   }
 }
+
+
+function performTake(commandObj) {
+  if (commandObj.objOne === null || commandObj.objTwo !== null) {
+    displayError("Failed to parse 'take' command!");
+  } else {
+    displayText(commandObj.objOne.doTake(commandObj));
+  }
+}
+
+function performInv(commandObj) {
+  if (commandObj.objOne !== null) {
+    displayError("Type 'inv' to view your inventory.");
+  } else {
+    displayText("inventory here TODO");
+  }
+}
+
 
 function changeRoom(roomObj) {
   world.currentRoom = roomObj;
@@ -158,7 +179,7 @@ function findAllCurrentObjects() {
 // getSynonyms(), for these comparisons?
 function lookForOneWordMatches(objects, word) {
   console.log("Matching: " + word);
-  console.log("Matching: " + objToString(objects));
+  console.log("Matching against: " + objToString(objects));
   for (let i = 0; i < objects.length; i++) {
     if (word.localeCompare(objects[i].shortName) === 0) {
       return objects[i];
@@ -223,12 +244,25 @@ function stateGet(key, defaultValue) {
 // The entire game, in an object.
 class GameWorld {
     constructor(gameName) {
-      this.gameName = gameName;
-      this.state = {};
-      this.inventory = [];
-      this.introText = "TODO: Write an intro.";
-      this.initialRoom = null;
-      this.currentRoom = null;
+        this.gameName = gameName;
+        this.state = {};
+        this.inventory = [];
+        this.introText = "TODO: Write an intro.";
+        this.initialRoom = null;
+        this.currentRoom = null;
+    }
+
+    addInvFromGameObj(gameObj) {
+        let inv = new InventoryItem(gameObj.shortName);
+        inv.desc = gameObj.desc;
+        this.inventory.push(inv);
+    }
+
+    removeObjFromCurrentRoom(gameObj) {
+      this.currentRoom.objects = this.currentRoom.objects.filter(obj => {
+          console.log("looking at: " + objToString(obj));
+          return obj.shortName != gameObj.shortName;
+      });
     }
 }
 
@@ -251,7 +285,11 @@ class GameObject {
 
   // Should this supplant doTalk() and similar methods?
   doInteract(commandObj) {
-    return "It is unresponsive."
+    return "It is unresponsive.";
+  }
+
+  doTake(commandObj) {
+    return "You can't take this. It's bolted down, or something.";
   }
 
 }
@@ -347,9 +385,17 @@ const PREPOSITIONS = [
 const VERB_TYPES = new Map();
 VERB_TYPES.set("go", "GO");
 VERB_TYPES.set("enter", "GO");
+
 VERB_TYPES.set("look", "LOOK");
 VERB_TYPES.set("see", "LOOK");
-VERB_TYPES.set("talk", "TALK");
-VERB_TYPES.set("use", "USE");
-/////// END GRAMMAR CONSTANTS
 
+VERB_TYPES.set("talk", "TALK");
+
+VERB_TYPES.set("use", "USE");
+
+VERB_TYPES.set("get", "TAKE");
+VERB_TYPES.set("take", "TAKE");
+
+VERB_TYPES.set("inv", "VIEW_INVENTORY");
+VERB_TYPES.set("inventory", "VIEW_INVENTORY");
+/////// END GRAMMAR CONSTANTS
