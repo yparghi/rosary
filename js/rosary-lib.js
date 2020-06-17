@@ -114,7 +114,12 @@ function performInv(commandObj) {
   if (commandObj.objOne !== null) {
     displayError("Type 'inv' to view your inventory.");
   } else {
-    displayText("inventory here TODO");
+    let str = "Inventory:";
+    world.inventory.forEach(obj => {
+      console.log("inv obj: " + objToString(obj));
+      str += "<p>" + obj.shortName + "</p>";
+    });
+    displayText(str);
   }
 }
 
@@ -172,7 +177,8 @@ function identifyObjects(words) {
 
 function findAllCurrentObjects() {
   room = world.currentRoom;
-  return room.findAllObjects();
+  return room.findAllObjects()
+      .concat(world.inventory);
 }
 
 // TODO: Maybe we should have a base GameObject class with methods like
