@@ -235,7 +235,7 @@ function clearErrorMessage() {
 }
 
 // Helper utility for state dict .get() behavior
-function stateGet(key, defaultValue) {
+function getState(key, defaultValue) {
   state = world.state;
   if (key in state) {
     return state[key];
@@ -258,10 +258,8 @@ class GameWorld {
         this.currentRoom = null;
     }
 
-    addInvFromGameObj(gameObj) {
-        let inv = new InventoryItem(gameObj.shortName);
-        inv.desc = gameObj.desc;
-        this.inventory.push(inv);
+    addInv(invItem) {
+        this.inventory.push(invItem);
     }
 
     removeObjFromCurrentRoom(gameObj) {
@@ -376,6 +374,12 @@ class Character extends GameObject {
 class InventoryItem extends GameObject {
     constructor(shortName) {
         super(shortName);
+    }
+
+    static fromGameObj(gameObj) {
+      let inv = new InventoryItem(gameObj.shortName);
+      inv.desc = gameObj.desc;
+      return inv;
     }
 }
 /////// END CLASSES
