@@ -365,6 +365,14 @@ class Character extends GameObject {
   }
 
   doTalk() {
+    for (const [key, value] of Object.entries(this.conversations)) {
+        if (key == "default") {
+          continue;
+        }
+        if (getState(key, false)) {
+          return this.conversations[key]();
+        }
+    }
     // NOTE: Is a function w/ side effects really the best way?...
     return this.conversations["default"]();
   }
