@@ -178,7 +178,8 @@ function identifyObjects(words) {
 function findAllCurrentObjects() {
   room = world.currentRoom;
   return room.findAllObjects()
-      .concat(world.inventory);
+      .concat(world.inventory)
+      .filter((obj) => { return obj.isVisible() });
 }
 
 // TODO: Maybe we should have a base GameObject class with methods like
@@ -271,31 +272,30 @@ class GameWorld {
 }
 
 class GameObject {
-  constructor(shortName) {
-    this.shortName = shortName;
-  }
+    constructor(shortName) {
+        this.shortName = shortName;
+    }
 
-  getDisplayText() {
-    return this.desc;
-  }
+    getDisplayText() {
+        return this.desc;
+    }
 
-  isTalkable() {
-    return false;
-  }
+    isTalkable() {
+        return false;
+    }
 
-  isVisible() {
-    return true;
-  }
+    isVisible() {
+        return true;
+    }
 
-  // Should this supplant doTalk() and similar methods?
-  doInteract(commandObj) {
-    return "It is unresponsive.";
-  }
+    // Should this supplant doTalk() and similar methods?
+    doInteract(commandObj) {
+        return "It is unresponsive.";
+    }
 
-  doTake(commandObj) {
-    return "You can't take this. It's bolted down, or something.";
-  }
-
+    doTake(commandObj) {
+        return "You can't take this. It's bolted down, or something.";
+    }
 }
 
 class GameRoom extends GameObject {
@@ -307,7 +307,10 @@ class GameRoom extends GameObject {
 
   findAllObjects() {
     return this.exits
-        .concat(this.objects);
+        .concat(this.objects)
+        .filter((obj) => {
+            return obj.isVisible();
+        });
   }
 
   getDisplayText() {

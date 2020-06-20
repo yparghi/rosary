@@ -1,3 +1,5 @@
+// TODO: Merge this all into lib.js?
+
 function rosary_start() {
   console.log("Rosary starting!");
   load_initial_game_state();
