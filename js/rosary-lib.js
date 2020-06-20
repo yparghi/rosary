@@ -177,7 +177,7 @@ function identifyObjects(words) {
 
 function findAllCurrentObjects() {
   room = world.currentRoom;
-  return room.findAllObjects()
+  return room.objectsInThisRoom()
       .concat(world.inventory)
       .filter((obj) => { return obj.isVisible() });
 }
@@ -305,7 +305,7 @@ class GameRoom extends GameObject {
     this.objects = [];
   }
 
-  findAllObjects() {
+  objectsInThisRoom() {
     return this.exits
         .concat(this.objects)
         .filter((obj) => {
