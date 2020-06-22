@@ -11,7 +11,6 @@ function doInternalParsing(text) {
   words = words.filter(function(word) {
     return !PREPOSITIONS.includes(word);
   });
-  console.log("Words: ", words);
 
   parseCommandFromWords(words);
 }
@@ -33,7 +32,6 @@ function parseCommandFromWords(words) {
     parsedObj.objOne = identifyResult.objOne;
     parsedObj.objTwo = identifyResult.objTwo;
 
-    console.log("Parsed command: " + objToString(parsedObj));
     if (identifyResult.error !== null) {
       displayError(identifyResult.error);
     } else {
@@ -116,7 +114,6 @@ function performInv(commandObj) {
   } else {
     let str = "Inventory:";
     world.inventory.forEach(obj => {
-      console.log("inv obj: " + objToString(obj));
       str += "<p>" + obj.shortName + "</p>";
     });
     displayText(str);
@@ -126,7 +123,16 @@ function performInv(commandObj) {
 
 function changeRoom(roomObj) {
   world.currentRoom = roomObj;
-  displayText(roomObj.getDisplayText());
+  let roomText = world.currentRoom.getDisplayText();
+  // TODO(Yash): Is this the right place to fire alerts? Should it be more often?
+  world.alerts.forEach((alert) => {
+      let alertText = alert();
+      if (alertText != null) {
+        roomText += "<br/>";
+        roomText += alertText;
+      }
+  });
+  displayText(roomText);
 }
 
 function startInitialRoom(roomObj) {
@@ -151,13 +157,9 @@ function identifyObjects(words) {
   allGameObjects = findAllCurrentObjects();
 
   for (let i = 0; i < words.length; i++) {
-    console.log("i: " + i);
     match = lookForOneWordMatches(allGameObjects, words[i]);
-    console.log("One-word match result: " + match);
     if (match === null && i < words.length - 1) {
       match = lookForTwoWordMatches(allGameObjects, words[i], words[i+1]);
-    } else {
-      console.log("SKIPPING two-word check.");
     }
 
     if (match !== null) {
@@ -185,14 +187,12 @@ function findAllCurrentObjects() {
 // TODO: Maybe we should have a base GameObject class with methods like
 // getSynonyms(), for these comparisons?
 function lookForOneWordMatches(objects, word) {
-  console.log("Matching: " + word);
-  console.log("Matching against: " + objToString(objects));
-  for (let i = 0; i < objects.length; i++) {
-    if (word.localeCompare(objects[i].shortName) === 0) {
-      return objects[i];
+    for (let i = 0; i < objects.length; i++) {
+        if (word.localeCompare(objects[i].shortName) === 0) {
+            return objects[i];
+        }
     }
-  }
-  return null;
+    return null;
 }
 
 function lookForTwoWordMatches(objects, word1, word2) {
@@ -254,6 +254,7 @@ class GameWorld {
         this.gameName = gameName;
         this.state = {};
         this.inventory = [];
+        this.alerts = [];
         this.introText = "TODO: Write an intro.";
         this.initialRoom = null;
         this.currentRoom = null;
@@ -265,7 +266,6 @@ class GameWorld {
 
     removeObjFromCurrentRoom(gameObj) {
       this.currentRoom.objects = this.currentRoom.objects.filter(obj => {
-          console.log("looking at: " + objToString(obj));
           return obj.shortName != gameObj.shortName;
       });
     }
