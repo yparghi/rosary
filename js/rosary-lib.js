@@ -92,7 +92,7 @@ function performTalk(commandObj) {
 
 function performUse(commandObj) {
   // ...Until we need 'use X with Y'?
-  if (commandObj.objOne === null || commandObj.objTwo !== null) {
+  if (commandObj.objOne === null) {
     displayError("Failed to parse 'use' command!");
   } else {
     displayText(commandObj.objOne.doInteract(commandObj));
