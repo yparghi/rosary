@@ -123,7 +123,17 @@ function performInv(commandObj) {
 
 function changeRoom(roomObj) {
   world.currentRoom = roomObj;
+  // TODO! hook text *BEFORE* exits text -- break up that logic?
   let roomText = world.currentRoom.getDisplayText();
+
+  world.currentRoom.entryHooks.forEach((entryHook) => {
+      let hookText = entryHook();
+      if (hookText != null) {
+        roomText += "<br/>";
+        roomText += hookText;
+      }
+  });
+
   // TODO(Yash): Is this the right place to fire alerts? Should it be more often?
   world.alerts.forEach((alert) => {
       let alertText = alert();
@@ -303,6 +313,7 @@ class GameRoom extends GameObject {
     super(shortName);
     this.exits = [];
     this.objects = [];
+    this.entryHooks = [];
   }
 
   objectsInThisRoom() {
