@@ -147,12 +147,14 @@ function changeRoom(roomObj) {
 
 function startInitialRoom(roomObj) {
   world.currentRoom = roomObj;
-  displayText(world.introText + "<br/>" + roomObj.getDisplayText());
+  world.displayHtml = world.introText;
+  displayText(roomObj.getDisplayText());
 }
 
 function displayText(message) {
+  world.displayHtml += "<hr/>" + message;
   display = document.getElementById("gameDisplay");
-  display.innerHTML = message;
+  display.innerHTML = world.displayHtml;
 }
 
 
@@ -268,6 +270,7 @@ class GameWorld {
         this.introText = "TODO: Write an intro.";
         this.initialRoom = null;
         this.currentRoom = null;
+        this.displayHtml = "";
     }
 
     addInv(invItem) {
