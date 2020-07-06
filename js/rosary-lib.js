@@ -152,9 +152,16 @@ function startInitialRoom(roomObj) {
 }
 
 function displayText(message) {
-  world.displayHtml += "<hr/>" + message;
+  world.displayHtml += "<hr/><p id=\"game_" + world.paragraphCounter + "\">";
+  world.displayHtml += message;
+  world.displayHtml += "</p>";
+  world.paragraphCounter += 1;
   display = document.getElementById("gameDisplay");
   display.innerHTML = world.displayHtml;
+  // TODO!:
+  // $("p#game_1").scrollIntoView({block: "start", behavior: "smooth", inline: "start"});
+  // BUT! we also need bottom padding (lots of <p/>'s?) in the game text, so that any paragraph can scroll to the top.
+  // TODO! function getParagraphId(paragraphCounter);
 }
 
 
@@ -271,6 +278,7 @@ class GameWorld {
         this.initialRoom = null;
         this.currentRoom = null;
         this.displayHtml = "";
+        this.paragraphCounter = 0;
     }
 
     addInv(invItem) {
