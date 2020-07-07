@@ -147,21 +147,31 @@ function changeRoom(roomObj) {
 
 function startInitialRoom(roomObj) {
   world.currentRoom = roomObj;
-  world.displayHtml = world.introText;
-  displayText(roomObj.getDisplayText());
+  displayText(world.introText + "<hr/>" + roomObj.getDisplayText());
 }
 
 function displayText(message) {
-  world.displayHtml += "<hr/><p id=\"game_" + world.paragraphCounter + "\">";
+  paragraphId = "game_" + world.paragraphCounter;
+  if (world.paragraphCounter != 0) {
+    world.displayHtml += "<hr/>";
+  }
+  world.displayHtml += `<p id="${paragraphId}">`;
   world.displayHtml += message;
   world.displayHtml += "</p>";
   world.paragraphCounter += 1;
+
+  // Padding to allow scrolling the latest paragraph to the top.
+  // TODO(Yash): Derive the necessary height programmatically?
+  let bottomBuffer = "<br/>".repeat(20);
+
   display = document.getElementById("gameDisplay");
-  display.innerHTML = world.displayHtml;
-  // TODO!:
-  // $("p#game_1").scrollIntoView({block: "start", behavior: "smooth", inline: "start"});
-  // BUT! we also need bottom padding (lots of <p/>'s?) in the game text, so that any paragraph can scroll to the top.
-  // TODO! function getParagraphId(paragraphCounter);
+  display.innerHTML = world.displayHtml + bottomBuffer;
+
+  document.getElementById(paragraphId).scrollIntoView({
+      block: "start",
+      behavior: "smooth",
+      inline: "start",
+  });
 }
 
 
