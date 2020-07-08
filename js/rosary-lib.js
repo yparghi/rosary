@@ -1,18 +1,22 @@
 function parseCommand() {
-	clearErrorMessage();
+    clearErrorMessage();
+    
+    if (world.isEnded()) {
+        return;
+    }
 
-  // TODO: Pass this in somehow, don"t grab it from the DOM. And write tests.
-  input = document.getElementById("gameInput").value.toLowerCase();
-  doInternalParsing(input);
+    // TODO: Pass this in somehow, don"t grab it from the DOM. And write tests.
+    input = document.getElementById("gameInput").value.toLowerCase();
+    doInternalParsing(input);
 }
 
 function doInternalParsing(text) {
-  words = text.split(/\s+/)
-  words = words.filter(function(word) {
-    return !PREPOSITIONS.includes(word);
-  });
+    words = text.split(/\s+/)
+    words = words.filter(function(word) {
+        return !PREPOSITIONS.includes(word);
+    });
 
-  parseCommandFromWords(words);
+    parseCommandFromWords(words);
 }
 
 // TODO: What if a 'look' command matches no object? It shouldn't just be
@@ -151,59 +155,63 @@ function startInitialRoom(roomObj) {
 }
 
 function displayText(message) {
-  paragraphId = "game_" + world.paragraphCounter;
-  if (world.paragraphCounter != 0) {
-    world.displayHtml += "<hr/>";
-  }
-  world.displayHtml += `<p id="${paragraphId}">`;
-  world.displayHtml += message;
-  world.displayHtml += "</p>";
-  world.paragraphCounter += 1;
+    if (message == null) {
+        return;
+    }
+    
+    paragraphId = "game_" + world.paragraphCounter;
+    if (world.paragraphCounter != 0) {
+        world.displayHtml += "<hr/>";
+    }
+    world.displayHtml += `<p id="${paragraphId}">`;
+    world.displayHtml += message;
+    world.displayHtml += "</p>";
+    world.paragraphCounter += 1;
 
-  // Padding to allow scrolling the latest paragraph to the top.
-  // TODO(Yash): Derive the necessary height programmatically?
-  let bottomBuffer = "<br/>".repeat(20);
+    // Padding to allow scrolling the latest paragraph to the top.
+    // TODO(Yash): Derive the necessary height programmatically?
+    let bottomBuffer = "<br/>".repeat(20);
 
-  display = document.getElementById("gameDisplay");
-  display.innerHTML = world.displayHtml + bottomBuffer;
+    display = document.getElementById("gameDisplay");
+    display.innerHTML = world.displayHtml + bottomBuffer;
 
-  document.getElementById(paragraphId).scrollIntoView({
-      block: "start",
-      behavior: "smooth",
-      inline: "start",
-  });
+    document.getElementById(paragraphId).scrollIntoView({
+        block: "start",
+        behavior: "smooth",
+        inline: "start",
+    });
 }
 
 
 // TODO: Figure out the general system of "registering" the existence or
 // nonexistence of objects, rooms, characters, etc.
 function identifyObjects(words) {
-  result = new Object();
-  result.objOne = null;
-  result.objTwo = null;
-  result.error = null;
+    result = new Object();
+    result.objOne = null;
+    result.objTwo = null;
+    result.error = null;
 
-  allGameObjects = findAllCurrentObjects();
+    allGameObjects = findAllCurrentObjects();
 
-  for (let i = 0; i < words.length; i++) {
-    match = lookForOneWordMatches(allGameObjects, words[i]);
-    if (match === null && i < words.length - 1) {
-      match = lookForTwoWordMatches(allGameObjects, words[i], words[i+1]);
-    }
-
-    if (match !== null) {
-      if (result.objOne === null) {
-        result.objOne = match;
-      } else if (result.objTwo === null) {
-        result.objTwo = match;
-      } else {
-        result.error = "3+ objs TODO";
-        return result;
+    for (let i = 0; i < words.length; i++) {
+      match = lookForOneWordMatches(allGameObjects, words[i]);
+      if (match === null && i < words.length - 1) {
+        match = lookForTwoWordMatches(allGameObjects, words[i], words[i+1]);
       }
-    }
-  }
 
-  return result;
+      if (match !== null) {
+          if (result.objOne === null) {
+              result.objOne = match;
+          } else if (result.objTwo === null) {
+              result.objTwo = match;
+          } else {
+              result.error = "3+ objs TODO";
+              return result;
+          }
+        }
+    }
+
+    return result;
 }
 
 function findAllCurrentObjects() {
@@ -289,6 +297,7 @@ class GameWorld {
         this.currentRoom = null;
         this.displayHtml = "";
         this.paragraphCounter = 0;
+        this.isEndedBool = false;
     }
 
     addInv(invItem) {
@@ -299,6 +308,15 @@ class GameWorld {
       this.currentRoom.objects = this.currentRoom.objects.filter(obj => {
           return obj.shortName != gameObj.shortName;
       });
+    }
+
+    isEnded() {
+        return this.isEndedBool;
+    }
+
+    endGame(message) {
+        displayText(message + "<hr/>" + "<p>THE END</p>");
+        this.isEndedBool = true;
     }
 }
 
