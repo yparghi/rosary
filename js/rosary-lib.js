@@ -163,9 +163,14 @@ function displayText(message) {
     if (world.paragraphCounter != 0) {
         world.displayHtml += "<hr/>";
     }
-    world.displayHtml += `<p id="${paragraphId}">`;
-    world.displayHtml += message;
-    world.displayHtml += "</p>";
+
+    generatedDiv = `<div id="${paragraphId}">
+    <p class="spacer">&nbsp;</p>
+    <p>${message}</p>
+    <p class="spacer">&nbsp;</p>
+    </div>`;
+
+    world.displayHtml += generatedDiv;
     world.paragraphCounter += 1;
 
     // Padding to allow scrolling the latest paragraph to the top.
