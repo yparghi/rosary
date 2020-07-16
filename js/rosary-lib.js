@@ -371,28 +371,29 @@ class GameRoom extends GameObject {
     getDisplayText() {
         var displayString = this.desc;
 
+        // TODO! function for spacer para.
         displayString += "<br/><br/>";
         if (this.objects.length > 0) {
-            displayString += "You see these objects: ";
-            for (let i = 0; i < this.objects.length; ++i) {
-                let object = this.objects[i];
-                if (!object.isVisible()) {
-                    continue;
-                }
-                displayString += object.shortName.toUpperCase() + ", ";
-            }
+            displayString += this.formatObjectsList("You see: ", this.objects);
         }
 
-        displayString += "<br/><br/>";
-        displayString += "Exits are: ";
-        for (let i = 0; i < this.exits.length; ++i) {
-            let exit = this.exits[i];
-            if (!exit.isVisible()) {
+        displayString += this.formatObjectsList("Exits are: ", this.exits);
+
+        return displayString;
+    }
+
+    formatObjectsList(prefix, objectsList) {
+        let displayString = prefix;
+        let objList = [];
+        for (let i = 0; i < objectsList.length; ++i) {
+            let object = objectsList[i];
+            if (!object.isVisible()) {
                 continue;
             }
-            displayString += exit.shortName.toUpperCase() + ", ";
+            objList.push(object.shortName.toUpperCase());
         }
-
+        displayString += objList.join(", ");
+        displayString += "<br/><br/>";
         return displayString;
     }
 }
