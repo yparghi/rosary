@@ -1,6 +1,6 @@
 function parseCommand() {
     clearErrorMessage();
-    
+
     if (world.isEnded()) {
         return;
     }
@@ -12,7 +12,7 @@ function parseCommand() {
 
 function doInternalParsing(text) {
     words = text.split(/\s+/)
-    words = words.filter(function(word) {
+    words = words.filter(function (word) {
         return !PREPOSITIONS.includes(word);
     });
 
@@ -26,8 +26,8 @@ function parseCommandFromWords(words) {
 
     verb = words[0];
     if (!VERB_TYPES.has(verb)) {
-      displayError("Unknown verb: " + verb);
-      return;
+        displayError("Unknown verb: " + verb);
+        return;
     }
 
     parsedObj.verb = VERB_TYPES.get(verb);
@@ -37,128 +37,128 @@ function parseCommandFromWords(words) {
     parsedObj.objTwo = identifyResult.objTwo;
 
     if (identifyResult.error !== null) {
-      displayError(identifyResult.error);
+        displayError(identifyResult.error);
     } else {
-      performCommand(parsedObj);
+        performCommand(parsedObj);
     }
 }
 
 
 function performCommand(commandObj) {
-  if (commandObj.verb === "GO") {
-    performGo(commandObj);
-  } else if (commandObj.verb === "LOOK") {
-    performLook(commandObj);
-  } else if (commandObj.verb === "TALK") {
-    performTalk(commandObj);
-  } else if (commandObj.verb === "USE") {
-    performUse(commandObj);
-  } else if (commandObj.verb === "TAKE") {
-    performTake(commandObj);
-  } else if (commandObj.verb === "VIEW_INVENTORY") {
-    performInv(commandObj);
-  } else {
-    displayError("Sorry, I don't know how to do that.");
-  }
+    if (commandObj.verb === "GO") {
+        performGo(commandObj);
+    } else if (commandObj.verb === "LOOK") {
+        performLook(commandObj);
+    } else if (commandObj.verb === "TALK") {
+        performTalk(commandObj);
+    } else if (commandObj.verb === "USE") {
+        performUse(commandObj);
+    } else if (commandObj.verb === "TAKE") {
+        performTake(commandObj);
+    } else if (commandObj.verb === "VIEW_INVENTORY") {
+        performInv(commandObj);
+    } else {
+        displayError("Sorry, I don't know how to do that.");
+    }
 }
 
 
 function performGo(commandObj) {
-  if (commandObj.objOne === null || commandObj.objTwo !== null) {
-    displayError("Failed to parse 'go' command!");
-  } else {
-    // TODO: Handle if you 'go' to the current room.
-    changeRoom(commandObj.objOne.getRoom());
-  }
+    if (commandObj.objOne === null || commandObj.objTwo !== null) {
+        displayError("Failed to parse 'go' command!");
+    } else {
+        // TODO: Handle if you 'go' to the current room.
+        changeRoom(commandObj.objOne.getRoom());
+    }
 }
 
 function performLook(commandObj) {
-  if (commandObj.objOne === null && commandObj.objTwo === null) {
-    displayText(world.currentRoom.getDisplayText());
-  } else if (commandObj.objOne !== null && commandObj.objTwo === null) {
-    displayText(commandObj.objOne.getDisplayText());
-  }
+    if (commandObj.objOne === null && commandObj.objTwo === null) {
+        displayText(world.currentRoom.getDisplayText());
+    } else if (commandObj.objOne !== null && commandObj.objTwo === null) {
+        displayText(commandObj.objOne.getDisplayText());
+    }
 }
 
 function performTalk(commandObj) {
-  if (commandObj.objOne === null || commandObj.objTwo !== null) {
-    displayError("Failed to parse 'talk' command!");
-    return;
-  }
+    if (commandObj.objOne === null || commandObj.objTwo !== null) {
+        displayError("Failed to parse 'talk' command!");
+        return;
+    }
 
-  if (!commandObj.objOne.isTalkable()) {
-      displayText("It has little to say.");
-      return;
-  }
+    if (!commandObj.objOne.isTalkable()) {
+        displayText("It has little to say.");
+        return;
+    }
 
-  displayText(commandObj.objOne.doTalk());
+    displayText(commandObj.objOne.doTalk());
 }
 
 function performUse(commandObj) {
-  // ...Until we need 'use X with Y'?
-  if (commandObj.objOne === null) {
-    displayError("Failed to parse 'use' command!");
-  } else {
-    displayText(commandObj.objOne.doInteract(commandObj));
-  }
+    // ...Until we need 'use X with Y'?
+    if (commandObj.objOne === null) {
+        displayError("Failed to parse 'use' command!");
+    } else {
+        displayText(commandObj.objOne.doInteract(commandObj));
+    }
 }
 
 
 function performTake(commandObj) {
-  if (commandObj.objOne === null || commandObj.objTwo !== null) {
-    displayError("Failed to parse 'take' command!");
-  } else {
-    displayText(commandObj.objOne.doTake(commandObj));
-  }
+    if (commandObj.objOne === null || commandObj.objTwo !== null) {
+        displayError("Failed to parse 'take' command!");
+    } else {
+        displayText(commandObj.objOne.doTake(commandObj));
+    }
 }
 
 function performInv(commandObj) {
-  if (commandObj.objOne !== null) {
-    displayError("Type 'inv' to view your inventory.");
-  } else {
-    let str = "Inventory:";
-    world.inventory.forEach(obj => {
-      str += "<p>" + obj.shortName + "</p>";
-    });
-    displayText(str);
-  }
+    if (commandObj.objOne !== null) {
+        displayError("Type 'inv' to view your inventory.");
+    } else {
+        let str = "Inventory:";
+        world.inventory.forEach(obj => {
+            str += "<p>" + obj.shortName + "</p>";
+        });
+        displayText(str);
+    }
 }
 
 
 function changeRoom(roomObj) {
-  world.currentRoom = roomObj;
-  // TODO! hook text *BEFORE* exits text -- break up that logic?
-  let roomText = world.currentRoom.getDisplayText();
+    world.currentRoom = roomObj;
+    // TODO! hook text *BEFORE* exits text -- break up that logic?
+    let roomText = world.currentRoom.getDisplayText();
 
-  world.currentRoom.entryHooks.forEach((entryHook) => {
-      let hookText = entryHook();
-      if (hookText != null) {
-        roomText += "<br/>";
-        roomText += hookText;
-      }
-  });
+    world.currentRoom.entryHooks.forEach((entryHook) => {
+        let hookText = entryHook();
+        if (hookText != null) {
+            roomText += "<br/>";
+            roomText += hookText;
+        }
+    });
 
-  // TODO(Yash): Is this the right place to fire alerts? Should it be more often?
-  world.alerts.forEach((alert) => {
-      let alertText = alert();
-      if (alertText != null) {
-        roomText += "<br/>";
-        roomText += alertText;
-      }
-  });
-  displayText(roomText);
+    // TODO(Yash): Is this the right place to fire alerts? Should it be more often?
+    world.alerts.forEach((alert) => {
+        let alertText = alert();
+        if (alertText != null) {
+            roomText += "<br/>";
+            roomText += alertText;
+        }
+    });
+    displayText(roomText);
 }
 
 function startInitialRoom(roomObj) {
-  world.currentRoom = roomObj;
-  displayText(world.introText + `<hr/><p class="spacer">&nbsp;</p>` + roomObj.getDisplayText());
+    world.currentRoom = roomObj;
+    displayText(world.introText + `<hr/><p class="spacer">&nbsp;</p>` + roomObj.getDisplayText());
 }
 
 function displayText(message) {
     if (message == null) {
         return;
     }
-    
+
     paragraphId = "game_" + world.paragraphCounter;
     if (world.paragraphCounter != 0) {
         world.displayHtml += "<hr/>";
@@ -199,20 +199,20 @@ function identifyObjects(words) {
     allGameObjects = findAllCurrentObjects();
 
     for (let i = 0; i < words.length; i++) {
-      match = lookForOneWordMatches(allGameObjects, words[i]);
-      if (match === null && i < words.length - 1) {
-        match = lookForTwoWordMatches(allGameObjects, words[i], words[i+1]);
-      }
+        match = lookForOneWordMatches(allGameObjects, words[i]);
+        if (match === null && i < words.length - 1) {
+            match = lookForTwoWordMatches(allGameObjects, words[i], words[i + 1]);
+        }
 
-      if (match !== null) {
-          if (result.objOne === null) {
-              result.objOne = match;
-          } else if (result.objTwo === null) {
-              result.objTwo = match;
-          } else {
-              result.error = "3+ objs TODO";
-              return result;
-          }
+        if (match !== null) {
+            if (result.objOne === null) {
+                result.objOne = match;
+            } else if (result.objTwo === null) {
+                result.objTwo = match;
+            } else {
+                result.error = "3+ objs TODO";
+                return result;
+            }
         }
     }
 
@@ -220,10 +220,10 @@ function identifyObjects(words) {
 }
 
 function findAllCurrentObjects() {
-  room = world.currentRoom;
-  return room.objectsInThisRoom()
-      .concat(world.inventory)
-      .filter((obj) => { return obj.isVisible() });
+    room = world.currentRoom;
+    return room.objectsInThisRoom()
+        .concat(world.inventory)
+        .filter((obj) => { return obj.isVisible() });
 }
 
 // TODO: Maybe we should have a base GameObject class with methods like
@@ -238,53 +238,53 @@ function lookForOneWordMatches(objects, word) {
 }
 
 function lookForTwoWordMatches(objects, word1, word2) {
-  word = word1 + " " + word2;
-  return lookForOneWordMatches(objects, word);
+    word = word1 + " " + word2;
+    return lookForOneWordMatches(objects, word);
 }
 
 // Thanks to: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cyclic_object_value#Examples
 const getCircularReplacer = () => {
-  const seen = new WeakSet();
-  return (key, value) => {
-    if (typeof value === "object" && value !== null) {
-      if (seen.has(value)) {
-				if (value.hasOwnProperty("shortName")) {
-          return "[Circular: " + value.shortName + "]";
-        } else {
-          return "[Circular]";
+    const seen = new WeakSet();
+    return (key, value) => {
+        if (typeof value === "object" && value !== null) {
+            if (seen.has(value)) {
+                if (value.hasOwnProperty("shortName")) {
+                    return "[Circular: " + value.shortName + "]";
+                } else {
+                    return "[Circular]";
+                }
+            }
+            seen.add(value);
         }
-      }
-      seen.add(value);
-    }
-    return value;
-  };
+        return value;
+    };
 };
 
 function objToString(obj) {
-  return JSON.stringify(obj, getCircularReplacer(), 4);
+    return JSON.stringify(obj, getCircularReplacer(), 4);
 }
 
 // TODO: Clear the input box?
 function displayError(message) {
-  // TODO: Find a better way than grabbing from the DOM.
-  errorDisplay = document.getElementById("gameErrorDisplay");
-  errorDisplay.innerHTML = message;
+    // TODO: Find a better way than grabbing from the DOM.
+    errorDisplay = document.getElementById("gameErrorDisplay");
+    errorDisplay.innerHTML = message;
 }
 
 function clearErrorMessage() {
-  // TODO: Find a better way than grabbing from the DOM.
-  errorDisplay = document.getElementById("gameErrorDisplay");
-  errorDisplay.innerHTML = "";
+    // TODO: Find a better way than grabbing from the DOM.
+    errorDisplay = document.getElementById("gameErrorDisplay");
+    errorDisplay.innerHTML = "";
 }
 
 // Helper utility for state dict .get() behavior
 function getState(key, defaultValue) {
-  state = world.state;
-  if (key in state) {
-    return state[key];
-  } else {
-    return defaultValue;
-  }
+    state = world.state;
+    if (key in state) {
+        return state[key];
+    } else {
+        return defaultValue;
+    }
 }
 
 
@@ -310,9 +310,9 @@ class GameWorld {
     }
 
     removeObjFromCurrentRoom(gameObj) {
-      this.currentRoom.objects = this.currentRoom.objects.filter(obj => {
-          return obj.shortName != gameObj.shortName;
-      });
+        this.currentRoom.objects = this.currentRoom.objects.filter(obj => {
+            return obj.shortName != gameObj.shortName;
+        });
     }
 
     isEnded() {
@@ -353,87 +353,89 @@ class GameObject {
 }
 
 class GameRoom extends GameObject {
-  constructor(shortName) {
-    super(shortName);
-    this.exits = [];
-    this.objects = [];
-    this.entryHooks = [];
-  }
-
-  objectsInThisRoom() {
-    return this.exits
-        .concat(this.objects)
-        .filter((obj) => {
-            return obj.isVisible();
-        });
-  }
-
-  getDisplayText() {
-    var displayString = this.desc;
-
-    displayString += "<br/><br/>";
-    displayString += "You see these objects: ";
-    for (let i = 0; i < this.objects.length; ++i) {
-        let object = this.objects[i];
-        if (!object.isVisible()) {
-            continue;
-        }
-        displayString += object.shortName.toUpperCase() + ", ";
+    constructor(shortName) {
+        super(shortName);
+        this.exits = [];
+        this.objects = [];
+        this.entryHooks = [];
     }
 
-    displayString += "<br/><br/>";
-    displayString += "Exits are: ";
-    for (let i = 0; i < this.exits.length; ++i) {
-        let exit = this.exits[i];
-        if (!exit.isVisible()) {
-            continue;
-        }
-        displayString += exit.shortName.toUpperCase() + ", ";
+    objectsInThisRoom() {
+        return this.exits
+            .concat(this.objects)
+            .filter((obj) => {
+                return obj.isVisible();
+            });
     }
 
-    return displayString;
-  }
+    getDisplayText() {
+        var displayString = this.desc;
+
+        displayString += "<br/><br/>";
+        if (this.objects.length > 0) {
+            displayString += "You see these objects: ";
+            for (let i = 0; i < this.objects.length; ++i) {
+                let object = this.objects[i];
+                if (!object.isVisible()) {
+                    continue;
+                }
+                displayString += object.shortName.toUpperCase() + ", ";
+            }
+        }
+
+        displayString += "<br/><br/>";
+        displayString += "Exits are: ";
+        for (let i = 0; i < this.exits.length; ++i) {
+            let exit = this.exits[i];
+            if (!exit.isVisible()) {
+                continue;
+            }
+            displayString += exit.shortName.toUpperCase() + ", ";
+        }
+
+        return displayString;
+    }
 }
 
 class RoomExit extends GameObject {
-  constructor(room) {
-    super(room.shortName);
-    this.room = room;
-  }
+    constructor(room) {
+        super(room.shortName);
+        this.room = room;
+    }
 
-  // For 'go' commands
-  getRoom() {
-    return this.room;
-  }
+    // For 'go' commands
+    getRoom() {
+        return this.room;
+    }
 
-  getDisplayText() {
-    return "You can't see from here. Just go.";
-  }
+    getDisplayText() {
+        return "You can't see from here. Just go.";
+    }
 }
 
 
 class Character extends GameObject {
-  constructor(shortName, conversations) {
-    super(shortName);
-    this.conversations = conversations;
-  }
-
-  isTalkable() {
-    return true;
-  }
-
-  doTalk() {
-    for (const [key, value] of Object.entries(this.conversations)) {
-        if (key == "default") {
-          continue;
-        }
-        if (getState(key, false)) {
-          return this.conversations[key]();
-        }
+    constructor(shortName, conversations) {
+        super(shortName);
+        this.conversations = conversations;
     }
-    // NOTE: Is a function w/ side effects really the best way?...
-    return this.conversations["default"]();
-  }
+
+    isTalkable() {
+        return true;
+    }
+
+    doTalk() {
+        for (const [key, value] of Object.entries(this.conversations)) {
+            if (key == "default") {
+                continue;
+            }
+            if (getState(key, false)) {
+                return this.conversations[key]();
+            }
+        }
+        // NOTE: Is a function w/ side effects really the best way?...
+        return this.conversations["default"]();
+    }
 }
 
 
@@ -443,9 +445,9 @@ class InventoryItem extends GameObject {
     }
 
     static fromGameObj(gameObj) {
-      let inv = new InventoryItem(gameObj.shortName);
-      inv.desc = gameObj.desc;
-      return inv;
+        let inv = new InventoryItem(gameObj.shortName);
+        inv.desc = gameObj.desc;
+        return inv;
     }
 }
 /////// END CLASSES
@@ -454,8 +456,8 @@ class InventoryItem extends GameObject {
 
 /////// GRAMMAR CONSTANTS
 const PREPOSITIONS = [
-  "at",
-  "to",
+    "at",
+    "to",
 ];
 
 const VERB_TYPES = new Map();
