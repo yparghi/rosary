@@ -151,7 +151,7 @@ function changeRoom(roomObj) {
 
 function startInitialRoom(roomObj) {
   world.currentRoom = roomObj;
-  displayText(world.introText + "<hr/>" + roomObj.getDisplayText());
+  displayText(world.introText + `<hr/><p class="spacer">&nbsp;</p>` + roomObj.getDisplayText());
 }
 
 function displayText(message) {
