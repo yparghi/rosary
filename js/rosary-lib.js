@@ -390,11 +390,15 @@ class GameRoom extends GameObject {
             if (!object.isVisible()) {
                 continue;
             }
-            objList.push(object.shortName.toUpperCase());
+            objList.push(this.formatObjectSpan(object.shortName));
         }
         displayString += objList.join(", ");
         displayString += "<br/><br/>";
         return displayString;
+    }
+
+    formatObjectSpan(objectName) {
+        return `<span class="objectName">${objectName.toUpperCase()}</span>`;
     }
 }
 
