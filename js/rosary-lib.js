@@ -1,3 +1,9 @@
+function rassert(condition, message) {
+    if (!condition) {
+        throw new Error(message);
+    }
+}
+
 function parseCommand() {
     clearErrorMessage();
 
@@ -290,6 +296,11 @@ function getState(key, defaultValue) {
 
 /////// CLASSES
 
+GAME_STATE_ENUM = Object.freeze({
+    NORMAL: 1,
+    CUTSCENE: 2,
+});
+
 // The entire game, in an object.
 class GameWorld {
     constructor(gameName) {
@@ -303,6 +314,8 @@ class GameWorld {
         this.displayHtml = "";
         this.paragraphCounter = 0;
         this.isEndedBool = false;
+        this.state = GAME_STATE_ENUM.NORMAL;
+        this.currentCutscene = null;
     }
 
     addInv(invItem) {
@@ -322,6 +335,16 @@ class GameWorld {
     endGame(message) {
         displayText(message + "<hr/>" + "<p>THE END</p>");
         this.isEndedBool = true;
+    }
+
+    playCutscene(cutscene) {
+        rassert(this.state == GAME_STATE_ENUM.NORMAL, "Invalid state to start a cutscene");
+    }
+}
+
+class Cutscene {
+    constructor(lines) {
+        this.lines = lines;
     }
 }
 
