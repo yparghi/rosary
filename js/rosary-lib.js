@@ -296,7 +296,7 @@ function getState(key, defaultValue) {
 
 /////// CLASSES
 
-GAME_STATE_ENUM = Object.freeze({
+PLAY_MODE_ENUM = Object.freeze({
     NORMAL: 1,
     CUTSCENE: 2,
 });
@@ -314,7 +314,7 @@ class GameWorld {
         this.displayHtml = "";
         this.paragraphCounter = 0;
         this.isEndedBool = false;
-        this.state = GAME_STATE_ENUM.NORMAL;
+        this.playMode = PLAY_MODE_ENUM.NORMAL;
         this.currentCutscene = null;
     }
 
@@ -338,13 +338,28 @@ class GameWorld {
     }
 
     playCutscene(cutscene) {
-        rassert(this.state == GAME_STATE_ENUM.NORMAL, "Invalid state to start a cutscene");
+        rassert(this.playMode == PLAY_MODE_ENUM.NORMAL, "Invalid state to start a cutscene: " + this.playMode);
+        this.playMode = PLAY_MODE_ENUM.CUTSCENE;
+        this.currentCutscene = cutscene;
+        displayText(cutscene.getNextLine());
     }
 }
 
 class Cutscene {
     constructor(lines) {
+        rassert(lines.length > 0);
         this.lines = lines;
+        this.idx = 0;
+    }
+
+    getNextLine() {
+        if (this.idx >= this.lines.length) {
+            return null;
+        } else {
+            let line = this.lines[this.idx];
+            this.idx += 1;
+            return line;
+        }
     }
 }
 
