@@ -5,6 +5,11 @@ function rassert(condition, message) {
 }
 
 function parseCommand() {
+    if (world.playMode == PLAY_MODE_ENUM.CUTSCENE) {
+        world.continueCutscene();
+        return;
+    }
+
     clearErrorMessage();
 
     if (world.isEnded()) {
@@ -179,18 +184,27 @@ function displayText(message) {
     world.displayHtml += generatedDiv;
     world.paragraphCounter += 1;
 
-    // Padding to allow scrolling the latest paragraph to the top.
-    // TODO(Yash): Derive the necessary height programmatically?
-    let bottomBuffer = "<br/>".repeat(20);
-
     display = document.getElementById("gameDisplay");
-    display.innerHTML = world.displayHtml + bottomBuffer;
+    display.innerHTML = world.displayHtml + bottomBuffer();
 
     document.getElementById(paragraphId).scrollIntoView({
         block: "start",
         behavior: "smooth",
         inline: "start",
     });
+}
+
+// Padding to allow scrolling the latest paragraph to the top.
+// TODO(Yash): Derive the necessary height programmatically?
+function bottomBuffer() {
+    return "<br/>".repeat(20);
+}
+
+function appendText(message) {
+    world.displayHtml += message;
+
+    display = document.getElementById("gameDisplay");
+    display.innerHTML = world.displayHtml + bottomBuffer();
 }
 
 
@@ -296,7 +310,7 @@ function getState(key, defaultValue) {
 
 /////// CLASSES
 
-PLAY_MODE_ENUM = Object.freeze({
+let PLAY_MODE_ENUM = Object.freeze({
     NORMAL: 1,
     CUTSCENE: 2,
 });
@@ -339,9 +353,30 @@ class GameWorld {
 
     playCutscene(cutscene) {
         rassert(this.playMode == PLAY_MODE_ENUM.NORMAL, "Invalid state to start a cutscene: " + this.playMode);
+        // TEMP YASH switchMode(...) to handle the enter button and text field...
         this.playMode = PLAY_MODE_ENUM.CUTSCENE;
         this.currentCutscene = cutscene;
         displayText(cutscene.getNextLine());
+        this.checkCutsceneState();
+    }
+
+    continueCutscene() {
+        rassert(this.playMode == PLAY_MODE_ENUM.CUTSCENE, "Expected to be mid-cutscene");
+        let nextLine = this.currentCutscene.getNextLine();
+        rassert(nextLine != null, "Cutscene should have a next line");
+        appendText(nextLine);
+        this.checkCutsceneState();
+    }
+
+    checkCutsceneState() {
+        rassert(this.currentCutscene != null);
+        if (this.currentCutscene.hasNextLine()) {
+            return;
+        } else {
+            this.currentCutscene = null;
+            // TEMP YASH switchMode(normal)
+            this.playMode = PLAY_MODE_ENUM.NORMAL;
+        }
     }
 }
 
@@ -360,6 +395,10 @@ class Cutscene {
             this.idx += 1;
             return line;
         }
+    }
+
+    hasNextLine() {
+        return (this.idx < this.lines.length);
     }
 }
 
