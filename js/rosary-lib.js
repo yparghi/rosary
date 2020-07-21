@@ -18,6 +18,8 @@ function parseCommand() {
 
     // TODO: Pass this in somehow, don"t grab it from the DOM. And write tests.
     input = document.getElementById("gameInput").value.toLowerCase();
+    // This is kind of a hack to display the typed command in story output, when ideally we'd pass the command, along with the text, to displayText();
+    world.lastEnteredCommand = input;
     doInternalParsing(input);
 }
 
@@ -176,8 +178,13 @@ function displayText(message) {
     }
 
     let messageAsLines = lineToParagraphs(message);
+    let commandText = "";
+    if (world.lastEnteredCommand != null) {
+        commandText = `<p class="commandText">&gt; ${world.lastEnteredCommand}</p>`;
+    }
     generatedDiv = `<div id="${paragraphId}">
     <p class="spacer">&nbsp;</p>
+    ${commandText}
     ${messageAsLines}
     <p class="spacer">&nbsp;</p>
     </div>`;
@@ -340,6 +347,7 @@ class GameWorld {
         this.isEndedBool = false;
         this.playMode = PLAY_MODE_ENUM.NORMAL;
         this.currentCutscene = null;
+        this.lastEnteredCommand = null;
     }
 
     addInv(invItem) {
