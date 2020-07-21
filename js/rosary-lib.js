@@ -22,7 +22,7 @@ function parseCommand() {
 }
 
 function doInternalParsing(text) {
-    words = text.split(/\s+/)
+    words = text.split(/\s+/);
     words = words.filter(function (word) {
         return !PREPOSITIONS.includes(word);
     });
@@ -175,9 +175,10 @@ function displayText(message) {
         world.displayHtml += "<hr/>";
     }
 
+    let messageAsLines = lineToParagraphs(message);
     generatedDiv = `<div id="${paragraphId}">
     <p class="spacer">&nbsp;</p>
-    <p>${message}</p>
+    ${messageAsLines}
     <p class="spacer">&nbsp;</p>
     </div>`;
 
@@ -194,6 +195,15 @@ function displayText(message) {
     });
 }
 
+function lineToParagraphs(line) {
+    let splitLines = line.split("\n");
+    out = "";
+    splitLines.forEach((line) => {
+        out += `<p>${line.trim()}</p>`;
+    });
+    return out;
+}
+
 // Padding to allow scrolling the latest paragraph to the top.
 // TODO(Yash): Derive the necessary height programmatically?
 function bottomBuffer() {
@@ -201,7 +211,7 @@ function bottomBuffer() {
 }
 
 function appendText(message) {
-    world.displayHtml += message;
+    world.displayHtml += lineToParagraphs(message);
 
     display = document.getElementById("gameDisplay");
     display.innerHTML = world.displayHtml + bottomBuffer();
