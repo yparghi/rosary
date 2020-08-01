@@ -1,12 +1,7 @@
 function rosary_start() {
-        console.log("Rosary starting!");
-        load_initial_game_state();
-  }
-  
-  function load_initial_game_state() {
-        startInitialRoom(world.initialRoom);
-  }
-  
+    world.start();
+}
+
 function rassert(condition, message) {
     if (!condition) {
         throw new Error(message);
@@ -171,10 +166,6 @@ function changeRoom(roomObj) {
     displayText(roomText);
 }
 
-function startInitialRoom(roomObj) {
-    world.currentRoom = roomObj;
-    displayText(world.introText + `<hr/><p class="spacer">&nbsp;</p>` + roomObj.getDisplayText());
-}
 
 function displayText(message) {
     if (message == null) {
@@ -348,7 +339,7 @@ class GameWorld {
         this.state = {};
         this.inventory = [];
         this.alerts = [];
-        this.introText = "TODO: Write an intro.";
+        this.introCutscene = null;
         this.initialRoom = null;
         this.currentRoom = null;
         this.displayHtml = "";
@@ -404,6 +395,14 @@ class GameWorld {
             // TEMP YASH switchMode(normal)
             this.playMode = PLAY_MODE_ENUM.NORMAL;
         }
+    }
+
+    start() {
+        rassert(this.introCutscene != null);
+        rassert(this.currentCutscene == null);
+        rassert(this.initialRoom != null);
+        rassert(this.currentRoom == null);
+        this.playCutscene(this.introCutscene);
     }
 }
 
