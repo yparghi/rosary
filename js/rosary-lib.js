@@ -2,7 +2,7 @@ function rosary_start() {
     world.start();
 }
 
-function rassert(condition, message) {
+function rassert(condition, message="<No assertion message>") {
     if (!condition) {
         throw new Error(message);
     }
@@ -167,13 +167,24 @@ function changeRoom(roomObj) {
 }
 
 
-function displayText(message) {
-    if (message == null) {
-        return;
+/**
+ * Options: {
+ *    scrollIntoView: true/false,
+ *    showLeadingHR: true/false,
+ * }
+ */
+function displayText(message, options=null) {
+    rassert(message != null);
+
+    if (options == null) {
+        options = {
+            scrollIntoView: true,
+            showLeadingHR: true,
+        };
     }
 
     paragraphId = "game_" + world.paragraphCounter;
-    if (world.paragraphCounter != 0) {
+    if (options.showLeadingHR) {
         world.displayHtml += "<hr/>";
     }
 
@@ -195,11 +206,13 @@ function displayText(message) {
     display = document.getElementById("gameDisplay");
     display.innerHTML = world.displayHtml + bottomBuffer();
 
-    document.getElementById(paragraphId).scrollIntoView({
-        block: "start",
-        behavior: "smooth",
-        inline: "start",
-    });
+    if (options.scrollIntoView) {
+        document.getElementById(paragraphId).scrollIntoView({
+            block: "start",
+            behavior: "smooth",
+            inline: "start",
+        });
+    }
 }
 
 function lineToParagraphs(line) {
@@ -215,13 +228,6 @@ function lineToParagraphs(line) {
 // TODO(Yash): Derive the necessary height programmatically?
 function bottomBuffer() {
     return "<br/>".repeat(20);
-}
-
-function appendText(message) {
-    world.displayHtml += lineToParagraphs(message);
-
-    display = document.getElementById("gameDisplay");
-    display.innerHTML = world.displayHtml + bottomBuffer();
 }
 
 
@@ -374,15 +380,17 @@ class GameWorld {
         // TEMP YASH switchMode(...) to handle the enter button and text field...
         this.playMode = PLAY_MODE_ENUM.CUTSCENE;
         this.currentCutscene = cutscene;
-        displayText(cutscene.getNextLine());
+        displayText(
+            this.currentCutscene.getNextLine(),
+            { scrollIntoView: true, showLeadingHR: false});
         this.checkCutsceneState();
     }
 
     continueCutscene() {
         rassert(this.playMode == PLAY_MODE_ENUM.CUTSCENE, "Expected to be mid-cutscene");
-        let nextLine = this.currentCutscene.getNextLine();
-        rassert(nextLine != null, "Cutscene should have a next line");
-        appendText(nextLine);
+        displayText(
+            this.currentCutscene.getNextLine(),
+            { scrollIntoView: false, showLeadingHR: false});
         this.checkCutsceneState();
     }
 
@@ -402,6 +410,7 @@ class GameWorld {
         rassert(this.currentCutscene == null);
         rassert(this.initialRoom != null);
         rassert(this.currentRoom == null);
+        this.currentRoom = this.initialRoom;
         this.playCutscene(this.introCutscene);
     }
 }
