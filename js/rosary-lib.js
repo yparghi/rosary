@@ -17,8 +17,8 @@ function parseCommand() {
         return;
     }
 
-    // TODO: Pass this in somehow, don"t grab it from the DOM. And write tests.
-    input = document.getElementById("gameInput").value.toLowerCase();
+    // TODO: Pass this in somehow, don't grab it from the DOM. And write tests.
+    input = document.getElementById("game_input").value.toLowerCase();
     // This is kind of a hack to display the typed command in story output, when ideally we'd pass the command, along with the text, to displayText();
     world.lastEnteredCommand = input;
     doInternalParsing(input);
