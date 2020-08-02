@@ -9,10 +9,7 @@ function rassert(condition, message="<No assertion message>") {
 }
 
 function parseCommand() {
-    if (world.playMode == PLAY_MODE_ENUM.CUTSCENE) {
-        world.continueCutscene();
-        return;
-    }
+    rassert(world.playMode == PLAY_MODE_ENUM.NORMAL);
 
     clearErrorMessage();
 
@@ -25,6 +22,11 @@ function parseCommand() {
     // This is kind of a hack to display the typed command in story output, when ideally we'd pass the command, along with the text, to displayText();
     world.lastEnteredCommand = input;
     doInternalParsing(input);
+}
+
+function continueCutscene() {
+    rassert(world.playMode == PLAY_MODE_ENUM.CUTSCENE);
+    world.continueCutscene();
 }
 
 function doInternalParsing(text) {
@@ -376,13 +378,11 @@ class GameWorld {
     }
 
     playCutscene(cutscene) {
-        rassert(this.playMode == PLAY_MODE_ENUM.NORMAL, "Invalid state to start a cutscene: " + this.playMode);
-        // TEMP YASH switchMode(...) to handle the enter button and text field...
-        this.playMode = PLAY_MODE_ENUM.CUTSCENE;
         this.currentCutscene = cutscene;
+        this.switchPlayMode(PLAY_MODE_ENUM.CUTSCENE);
         displayText(
             this.currentCutscene.getNextLine(),
-            { scrollIntoView: true, showLeadingHR: false});
+            { scrollIntoView: true, showLeadingHR: true});
         this.checkCutsceneState();
     }
 
@@ -400,8 +400,7 @@ class GameWorld {
             return;
         } else {
             this.currentCutscene = null;
-            // TEMP YASH switchMode(normal)
-            this.playMode = PLAY_MODE_ENUM.NORMAL;
+            this.switchPlayMode(PLAY_MODE_ENUM.NORMAL);
         }
     }
 
@@ -413,7 +412,27 @@ class GameWorld {
         this.currentRoom = this.initialRoom;
         this.playCutscene(this.introCutscene);
     }
+
+    switchPlayMode(newMode) {
+        let inputDiv = document.getElementById("regular_input_container");
+        let cutsceneDiv = document.getElementById("cutscene_input_container");
+
+        if (newMode == PLAY_MODE_ENUM.CUTSCENE) {
+            rassert(this.playMode == PLAY_MODE_ENUM.NORMAL,
+                "Invalid state to start a cutscene: " + this.playMode);
+            inputDiv.style.display = "none";
+            cutsceneDiv.style.display = "block";
+
+        } else if (newMode == PLAY_MODE_ENUM.NORMAL) {
+            rassert(this.playMode == PLAY_MODE_ENUM.CUTSCENE);
+            inputDiv.style.display = "block";
+            cutsceneDiv.style.display = "none";
+        }
+
+        this.playMode = newMode;
+    }
 }
+
 
 class Cutscene {
     constructor(lines) {
