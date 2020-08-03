@@ -171,7 +171,7 @@ function changeRoom(roomObj) {
 
 /**
  * Options: {
- *    scrollIntoView: true/false,
+ *    scrollToTop: true/false,
  *    showLeadingHR: true/false,
  * }
  */
@@ -180,7 +180,7 @@ function displayText(message, options=null) {
 
     if (options == null) {
         options = {
-            scrollIntoView: true,
+            scrollToTop: true,
             showLeadingHR: true,
         };
     }
@@ -208,9 +208,16 @@ function displayText(message, options=null) {
     display = document.getElementById("gameDisplay");
     display.innerHTML = world.displayHtml + bottomBuffer();
 
-    if (options.scrollIntoView) {
+    if (options.scrollToTop) {
         document.getElementById(paragraphId).scrollIntoView({
             block: "start",
+            behavior: "smooth",
+            inline: "start",
+        });
+    } else {
+        // Just bring the element into view, say if it's cut off at the bottom.
+        document.getElementById(paragraphId).scrollIntoView({
+            block: "nearest",
             behavior: "smooth",
             inline: "start",
         });
@@ -382,7 +389,7 @@ class GameWorld {
         this.switchPlayMode(PLAY_MODE_ENUM.CUTSCENE);
         displayText(
             this.currentCutscene.getNextLine(),
-            { scrollIntoView: true, showLeadingHR: true});
+            { scrollToTop: true, showLeadingHR: true});
         this.checkCutsceneState();
     }
 
@@ -390,7 +397,7 @@ class GameWorld {
         rassert(this.playMode == PLAY_MODE_ENUM.CUTSCENE, "Expected to be mid-cutscene");
         displayText(
             this.currentCutscene.getNextLine(),
-            { scrollIntoView: false, showLeadingHR: false});
+            { scrollToTop: false, showLeadingHR: false});
         this.checkCutsceneState();
     }
 
