@@ -173,6 +173,7 @@ function changeRoom(roomObj) {
  * Options: {
  *    scrollToTop: true/false,
  *    showLeadingHR: true/false,
+ *    addTopPadding: true/false,
  * }
  */
 function displayText(message, options=null) {
@@ -182,12 +183,18 @@ function displayText(message, options=null) {
         options = {
             scrollToTop: true,
             showLeadingHR: true,
+            addTopPadding: true,
         };
     }
 
     paragraphId = "game_" + world.paragraphCounter;
+    generatedDiv = "";
     if (options.showLeadingHR) {
-        world.displayHtml += "<hr/>";
+        generatedDiv += `<hr/>`;
+    }
+    generatedDiv += `<div id="${paragraphId}">`;
+    if (options.addTopPadding) {
+        generatedDiv += `<p class="spacer">&nbsp;</p>`;
     }
 
     let messageAsLines = lineToParagraphs(message);
@@ -195,9 +202,7 @@ function displayText(message, options=null) {
     if (world.lastEnteredCommand != null) {
         commandText = `<p class="commandText">&gt; ${world.lastEnteredCommand}</p>`;
     }
-    generatedDiv = `<div id="${paragraphId}">
-    <p class="spacer">&nbsp;</p>
-    ${commandText}
+    generatedDiv += `${commandText}
     ${messageAsLines}
     <p class="spacer">&nbsp;</p>
     </div>`;
@@ -389,7 +394,7 @@ class GameWorld {
         this.switchPlayMode(PLAY_MODE_ENUM.CUTSCENE);
         displayText(
             this.currentCutscene.getNextLine(),
-            { scrollToTop: true, showLeadingHR: true});
+            { scrollToTop: true, showLeadingHR: true, addTopPadding: true});
         this.checkCutsceneState();
     }
 
@@ -397,7 +402,7 @@ class GameWorld {
         rassert(this.playMode == PLAY_MODE_ENUM.CUTSCENE, "Expected to be mid-cutscene");
         displayText(
             this.currentCutscene.getNextLine(),
-            { scrollToTop: false, showLeadingHR: false});
+            { scrollToTop: false, showLeadingHR: false, addTopPadding: false});
         this.checkCutsceneState();
     }
 
