@@ -168,6 +168,9 @@ function changeRoom(roomObj) {
     displayText(roomText);
 }
 
+function spacerParagraph() {
+    return `<p class="spacer">&nbsp;</p>`;
+}
 
 /**
  * Options: {
@@ -194,7 +197,7 @@ function displayText(message, options=null) {
     }
     generatedDiv += `<div id="${paragraphId}">`;
     if (options.addTopPadding) {
-        generatedDiv += `<p class="spacer">&nbsp;</p>`;
+        generatedDiv += spacerParagraph();
     }
 
     let messageAsLines = lineToParagraphs(message);
@@ -233,7 +236,12 @@ function lineToParagraphs(line) {
     let splitLines = line.split("\n");
     out = "";
     splitLines.forEach((line) => {
-        out += `<p>${line.trim()}</p>`;
+        let trimmed = line.trim();
+        if (trimmed.length > 0) {
+            out += `<p class="game_text">${trimmed}</p>`;
+        } else {
+            out += spacerParagraph();
+        }
     });
     return out;
 }
