@@ -177,17 +177,26 @@ function spacerParagraph() {
  *    scrollToTop: true/false,
  *    showLeadingHR: true/false,
  *    addTopPadding: true/false,
+ *    showEnteredCommand: true/false,
  * }
  */
 function displayText(message, options=null) {
     rassert(message != null);
 
     if (options == null) {
-        options = {
-            scrollToTop: true,
-            showLeadingHR: true,
-            addTopPadding: true,
-        };
+        options = {};
+    }
+    if (!("scrollToTop" in options)) {
+        options.scrollToTop = true;
+    }
+    if (!("showLeadingHR" in options)) {
+        options.showLeadingHR = true;
+    }
+    if (!("scrollToTop" in options)) {
+        options.scrollToTop = true;
+    }
+    if (!("showEnteredCommand" in options)) {
+        options.showEnteredCommand = true;
     }
 
     paragraphId = "game_" + world.paragraphCounter;
@@ -202,7 +211,7 @@ function displayText(message, options=null) {
 
     let messageAsLines = lineToParagraphs(message);
     let commandText = "";
-    if (world.lastEnteredCommand != null) {
+    if (options.showEnteredCommand && world.lastEnteredCommand != null) {
         commandText = `<p class="commandText">&gt; ${world.lastEnteredCommand}</p>`;
     }
     generatedDiv += `${commandText}
@@ -410,7 +419,7 @@ class GameWorld {
         rassert(this.playMode == PLAY_MODE_ENUM.CUTSCENE, "Expected to be mid-cutscene");
         displayText(
             this.currentCutscene.getNextLine(),
-            { scrollToTop: false, showLeadingHR: false, addTopPadding: false});
+            { scrollToTop: false, showLeadingHR: false, addTopPadding: false, showEnteredCommand: false});
         this.checkCutsceneState();
     }
 
