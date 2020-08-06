@@ -87,7 +87,7 @@ function performGo(commandObj) {
         displayError("Failed to parse 'go' command!");
     } else {
         // TODO: Handle if you 'go' to the current room.
-        changeRoom(commandObj.objOne.getRoom());
+        displayText(commandObj.objOne.doGo(commandObj));
     }
 }
 
@@ -143,30 +143,6 @@ function performInv(commandObj) {
     }
 }
 
-
-function changeRoom(roomObj) {
-    world.currentRoom = roomObj;
-    // TODO! hook text *BEFORE* exits text -- break up that logic?
-    let roomText = world.currentRoom.getDisplayText();
-
-    world.currentRoom.entryHooks.forEach((entryHook) => {
-        let hookText = entryHook();
-        if (hookText != null) {
-            roomText += "<br/>";
-            roomText += hookText;
-        }
-    });
-
-    // TODO(Yash): Is this the right place to fire alerts? Should it be more often?
-    world.alerts.forEach((alert) => {
-        let alertText = alert();
-        if (alertText != null) {
-            roomText += "<br/>";
-            roomText += alertText;
-        }
-    });
-    displayText(roomText);
-}
 
 function spacerParagraph() {
     return `<p class="spacer">&nbsp;</p>`;
@@ -510,6 +486,10 @@ class GameObject {
     doTake(commandObj) {
         return "You can't take this. It's bolted down, or something.";
     }
+
+    doGo(commandObj) {
+        return "This entity is not a place which can be gone to.";
+    }
 }
 
 class GameRoom extends GameObject {
@@ -531,7 +511,6 @@ class GameRoom extends GameObject {
     getDisplayText() {
         var displayString = this.desc;
 
-        // TODO! function for spacer para.
         displayString += "<br/><br/>";
         if (this.objects.length > 0) {
             displayString += this.formatObjectsList("You see: ", this.objects);
@@ -560,7 +539,33 @@ class GameRoom extends GameObject {
     formatObjectSpan(objectName) {
         return `<span class="objectName">${objectName.toUpperCase()}</span>`;
     }
+
+    doGo(commandObj) {
+        world.currentRoom = this;
+        // TODO! hook text *BEFORE* exits text -- break up that logic?
+        let roomText = world.currentRoom.getDisplayText();
+
+        world.currentRoom.entryHooks.forEach((entryHook) => {
+            let hookText = entryHook();
+            if (hookText != null) {
+                roomText += "<br/>";
+                roomText += hookText;
+            }
+        });
+
+        // TODO(Yash): Is this the right place to fire alerts? Should it be more often?
+        world.alerts.forEach((alert) => {
+            let alertText = alert();
+            if (alertText != null) {
+                roomText += "<br/>";
+                roomText += alertText;
+            }
+        });
+
+        return roomText;
+    }
 }
+
 
 class RoomExit extends GameObject {
     constructor(room) {
@@ -575,6 +580,10 @@ class RoomExit extends GameObject {
 
     getDisplayText() {
         return "You can't see from here. Just go.";
+    }
+
+    doGo(commandObj) {
+        return this.getRoom().doGo(commandObj);
     }
 }
 
