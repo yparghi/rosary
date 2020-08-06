@@ -8,6 +8,17 @@ function rassert(condition, message="<No assertion message>") {
     }
 }
 
+function focusKeyboard() {
+    if (world.playMode == PLAY_MODE_ENUM.NORMAL) {
+        let commandInput = document.getElementById("game_input");
+        commandInput.value = "";
+        commandInput.focus();
+    } else if (world.playMode = PLAY_MODE_ENUM.CUTSCENE) {
+        let continueButton = document.getElementById("continue_button");
+        continueButton.focus();
+    }
+}
+
 function parseCommand() {
     rassert(world.playMode == PLAY_MODE_ENUM.NORMAL);
 
@@ -22,6 +33,8 @@ function parseCommand() {
     // This is kind of a hack to display the typed command in story output, when ideally we'd pass the command, along with the text, to displayText();
     world.lastEnteredCommand = input;
     doInternalParsing(input);
+
+    focusKeyboard();
 }
 
 function continueCutscene() {
@@ -435,6 +448,7 @@ class GameWorld {
         }
 
         this.playMode = newMode;
+        focusKeyboard();
     }
 }
 
