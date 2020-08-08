@@ -152,11 +152,13 @@ function performTalk(commandObj) {
         return;
     }
 
-    displayText(commandObj.objOne.doTalk());
+    let out = commandObj.objOne.doTalk();
+    if (out !== null) {
+        displayText(out);
+    }
 }
 
 function performUse(commandObj) {
-    // ...Until we need 'use X with Y'?
     if (commandObj.objOne === null) {
         displayError("Failed to parse 'use' command!");
     } else {
@@ -414,10 +416,20 @@ class GameWorld {
         this.inventory.push(invItem);
     }
 
+    removeInv(invItem) {
+        this.inventory = this.inventory.filter(obj => {
+            return obj.shortName != invItem.shortName;
+        });
+    }
+
     removeObjFromCurrentRoom(gameObj) {
         this.currentRoom.objects = this.currentRoom.objects.filter(obj => {
             return obj.shortName != gameObj.shortName;
         });
+    }
+
+    addObjToCurrentRoom(gameObj) {
+        this.currentRoom.objects.push(gameObj);
     }
 
     isEnded() {
@@ -687,11 +699,14 @@ VERB_TYPES.set("go", "GO");
 VERB_TYPES.set("enter", "GO");
 
 VERB_TYPES.set("look", "LOOK");
+VERB_TYPES.set("l", "LOOK");
+VERB_TYPES.set("ls", "LOOK");
 VERB_TYPES.set("see", "LOOK");
 
 VERB_TYPES.set("talk", "TALK");
 
 VERB_TYPES.set("use", "USE");
+VERB_TYPES.set("open", "USE");
 
 VERB_TYPES.set("get", "TAKE");
 VERB_TYPES.set("take", "TAKE");
