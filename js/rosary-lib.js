@@ -1,7 +1,6 @@
 function rosary_start() {
     document.getElementById("game_input").addEventListener("keyup", (e) => {
         if (e.keyCode === 13) {
-            console.log("Parsing from enter!");
             e.preventDefault();
             e.stopPropagation();
             document.getElementById("command_button").focus();
@@ -9,23 +8,22 @@ function rosary_start() {
         }
     });
 
+    // These 'blockers' are the only way I've found to stop an enter keypress
+    // from somehow hitting the text input too, which results in a
+    // double-submit.
     document.getElementById("command_button").addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log("click!");
         parseCommand();
     });
     document.getElementById("command_button").addEventListener("keydown", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log("stopped keydown!");
     });
     document.getElementById("command_button").addEventListener("keyup", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        if (e.keyCode != 13) {
-            console.log("stopped keyup!");
-        } else {
+        if (e.keyCode === 13) {
             parseCommand();
         }
     });
