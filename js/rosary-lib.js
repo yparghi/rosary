@@ -210,8 +210,8 @@ function displayText(message, options=null) {
     if (!("showLeadingHR" in options)) {
         options.showLeadingHR = true;
     }
-    if (!("scrollToTop" in options)) {
-        options.scrollToTop = true;
+    if (!("addTopPadding" in options)) {
+        options.addTopPadding = true;
     }
     if (!("showEnteredCommand" in options)) {
         options.showEnteredCommand = true;
