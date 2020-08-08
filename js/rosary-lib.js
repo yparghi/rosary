@@ -1,7 +1,31 @@
 function rosary_start() {
     document.getElementById("game_input").addEventListener("keyup", (e) => {
-        e.preventDefault();
         if (e.keyCode === 13) {
+            console.log("Parsing from enter!");
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById("command_button").focus();
+            document.getElementById("command_button").click();
+        }
+    });
+
+    document.getElementById("command_button").addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("click!");
+        parseCommand();
+    });
+    document.getElementById("command_button").addEventListener("keydown", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("stopped keydown!");
+    });
+    document.getElementById("command_button").addEventListener("keyup", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.keyCode != 13) {
+            console.log("stopped keyup!");
+        } else {
             parseCommand();
         }
     });
@@ -218,22 +242,27 @@ function displayText(message, options=null) {
     world.displayHtml += generatedDiv;
     world.paragraphCounter += 1;
 
-    display = document.getElementById("gameDisplay");
+    let display = document.getElementById("gameDisplay");
     display.innerHTML = world.displayHtml + bottomBuffer();
 
+    // NOTE: For this to work, gameDisplay must have the CSS "position: relative".
     if (options.scrollToTop) {
-        document.getElementById(paragraphId).scrollIntoView({
-            block: "start",
-            behavior: "smooth",
-            inline: "start",
+        let para = document.getElementById(paragraphId);
+        display.scroll({
+            "top": para.offsetTop,
+            "behavior": "smooth",
         });
     } else {
         // Just bring the element into view, say if it's cut off at the bottom.
-        document.getElementById(paragraphId).scrollIntoView({
-            block: "nearest",
-            behavior: "smooth",
-            inline: "start",
-        });
+        let para = document.getElementById(paragraphId);
+        let paraBottom = para.offsetTop + para.offsetHeight;
+        let cutOffPart = paraBottom - display.scrollTop - display.offsetHeight;
+        if (cutOffPart > 0) {
+            display.scrollBy({
+                "top": cutOffPart,
+                "behavior": "smooth",
+            });
+        }
     }
 }
 
