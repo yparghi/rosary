@@ -1,4 +1,11 @@
 function rosary_start() {
+    document.getElementById("game_input").addEventListener("keyup", (e) => {
+        e.preventDefault();
+        if (e.keyCode === 13) {
+            parseCommand();
+        }
+    });
+
     world.start();
 }
 
