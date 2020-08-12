@@ -221,7 +221,7 @@ function displayText(message, options=null) {
 
     paragraphId = "game_" + world.paragraphCounter;
     generatedDiv = "";
-    if (options.showLeadingHR) {
+    if (options.showLeadingHR && world.paragraphCounter > 0) {
         generatedDiv += `<hr/>`;
     }
     generatedDiv += `<div id="${paragraphId}">`;
