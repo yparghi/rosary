@@ -320,9 +320,7 @@ function identifyObjects(words) {
 
 function findAllCurrentObjects() {
     room = world.currentRoom;
-    return room.objectsInThisRoom()
-        .concat(world.inventory)
-        .filter((obj) => { return obj.isVisible() });
+    return room.interactableObjectsInThisRoom().concat(world.inventory);
 }
 
 // TODO: Maybe we should have a base GameObject class with methods like
@@ -560,12 +558,8 @@ class GameRoom extends GameObject {
         this.entryHooks = [];
     }
 
-    objectsInThisRoom() {
-        return this.exits
-            .concat(this.objects)
-            .filter((obj) => {
-                return obj.isVisible();
-            });
+    interactableObjectsInThisRoom() {
+        return this.exits.concat(this.objects);
     }
 
     getDisplayText() {
@@ -707,6 +701,7 @@ VERB_TYPES.set("talk", "TALK");
 
 VERB_TYPES.set("use", "USE");
 VERB_TYPES.set("open", "USE");
+VERB_TYPES.set("search", "USE");
 
 VERB_TYPES.set("get", "TAKE");
 VERB_TYPES.set("take", "TAKE");
