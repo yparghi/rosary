@@ -51,14 +51,18 @@ function focusKeyboard() {
 function parseCommand() {
     rassert(world.playMode == PLAY_MODE_ENUM.NORMAL);
 
+    let input = document.getElementById("game_input").value.toLowerCase();
+    if (input == "") {
+        focusKeyboard();
+        return;
+    }
+
     clearErrorMessage();
 
     if (world.isEnded()) {
         return;
     }
 
-    // TODO: Pass this in somehow, don't grab it from the DOM. And write tests.
-    input = document.getElementById("game_input").value.toLowerCase();
     // This is kind of a hack to display the typed command in story output, when ideally we'd pass the command, along with the text, to displayText();
     world.lastEnteredCommand = input;
     doInternalParsing(input);
