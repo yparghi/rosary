@@ -78,7 +78,7 @@ function continueCutscene() {
 function doInternalParsing(text) {
     words = text.split(/\s+/);
     words = words.filter(function (word) {
-        return !PREPOSITIONS.includes(word);
+        return !IGNORED_WORDS.includes(word);
     });
 
     parseCommandFromWords(words);
@@ -96,8 +96,14 @@ function parseCommandFromWords(words) {
     }
 
     parsedObj.verb = VERB_TYPES.get(verb);
+    parsedObj.typedVerb = verb;
 
-    var identifyResult = identifyObjects(words.slice(1));
+    if (parsedObj.verb == "SAY") {
+        parsedObj.saidWord = words[1];
+        identifyResult = identifyObjects(words.slice(2));
+    } else {
+        identifyResult = identifyObjects(words.slice(1));
+    }
     parsedObj.objOne = identifyResult.objOne;
     parsedObj.objTwo = identifyResult.objTwo;
 
@@ -122,6 +128,8 @@ function performCommand(commandObj) {
         performTake(commandObj);
     } else if (commandObj.verb === "VIEW_INVENTORY") {
         performInv(commandObj);
+    } else if (commandObj.verb === "SAY") {
+        performSay(commandObj);
     } else {
         displayError("Sorry, I don't know how to do that.");
     }
@@ -188,6 +196,16 @@ function performInv(commandObj) {
             str += "<p>" + obj.shortName + "</p>";
         });
         displayText(str);
+    }
+}
+
+function performSay(commandObj) {
+    if (commandObj.saidWord == null) {
+        displayError(commandObj.typedVerb + " what?");
+    } else if (commandObj.objOne == null) {
+        displayError(commandObj.typedVerb + " it to who or what?");
+    } else {
+        displayText(commandObj.objOne.doSay(commandObj));
     }
 }
 
@@ -552,6 +570,10 @@ class GameObject {
     doGo(commandObj) {
         return "This entity is not a place which can be gone to.";
     }
+
+    doSay(commandObj) {
+        return "It is unresponsive.";
+    }
 }
 
 class GameRoom extends GameObject {
@@ -687,9 +709,16 @@ class InventoryItem extends GameObject {
 
 
 /////// GRAMMAR CONSTANTS
-const PREPOSITIONS = [
+const IGNORED_WORDS = [
     "at",
     "to",
+    "in",
+    "on",
+    "into",
+    "around",
+    "a",
+    "an",
+    "the",
 ];
 
 const VERB_TYPES = new Map();
@@ -709,6 +738,10 @@ VERB_TYPES.set("search", "USE");
 
 VERB_TYPES.set("get", "TAKE");
 VERB_TYPES.set("take", "TAKE");
+
+VERB_TYPES.set("say", "SAY");
+VERB_TYPES.set("type", "SAY");
+
 
 VERB_TYPES.set("inv", "VIEW_INVENTORY");
 VERB_TYPES.set("inventory", "VIEW_INVENTORY");
