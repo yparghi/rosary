@@ -130,6 +130,8 @@ function performCommand(commandObj) {
         performInv(commandObj);
     } else if (commandObj.verb === "SAY") {
         performSay(commandObj);
+    } else if (commandObj.verb === "LEAVE") {
+        performLeave(commandObj);
     } else {
         displayError("Sorry, I don't know how to do that.");
     }
@@ -206,6 +208,14 @@ function performSay(commandObj) {
         displayError(commandObj.typedVerb + " it to who or what?");
     } else {
         displayText(commandObj.objOne.doSay(commandObj));
+    }
+}
+
+function performLeave(commandObj) {
+    if (commandObj.saidWord == null) {
+        displayError(commandObj.typedVerb + " what?");
+    } else {
+        displayText(commandObj.objOne.doLeave(commandObj));
     }
 }
 
@@ -574,6 +584,10 @@ class GameObject {
     doSay(commandObj) {
         return "It is unresponsive.";
     }
+    
+    doLeave(commandObj) {
+        return "You leave it be. It is quietly appreciative.";
+    }
 }
 
 class GameRoom extends GameObject {
@@ -735,6 +749,7 @@ VERB_TYPES.set("talk", "TALK");
 VERB_TYPES.set("use", "USE");
 VERB_TYPES.set("open", "USE");
 VERB_TYPES.set("search", "USE");
+VERB_TYPES.set("read", "USE");
 
 VERB_TYPES.set("get", "TAKE");
 VERB_TYPES.set("take", "TAKE");
@@ -742,6 +757,7 @@ VERB_TYPES.set("take", "TAKE");
 VERB_TYPES.set("say", "SAY");
 VERB_TYPES.set("type", "SAY");
 
+VERB_TYPES.set("leave", "LEAVE");
 
 VERB_TYPES.set("inv", "VIEW_INVENTORY");
 VERB_TYPES.set("inventory", "VIEW_INVENTORY");
