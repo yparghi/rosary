@@ -31,6 +31,15 @@ function rosary_start() {
     world.start();
 }
 
+function isTesting() {
+    let testParam = document.URL.match(/testing=([a-z]+)/);
+    if (testParam != null) {
+        return (testParam[1] === "true");
+    } else {
+        return false;
+    }
+}
+
 function rassert(condition, message="<No assertion message>") {
     if (!condition) {
         throw new Error(message);
