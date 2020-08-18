@@ -212,8 +212,8 @@ function performSay(commandObj) {
 }
 
 function performLeave(commandObj) {
-    if (commandObj.saidWord == null) {
-        displayError(commandObj.typedVerb + " what?");
+    if (commandObj.objOne === null) {
+        displayError("Leave what?");
     } else {
         displayText(commandObj.objOne.doLeave(commandObj));
     }
@@ -233,7 +233,10 @@ function spacerParagraph() {
  * }
  */
 function displayText(message, options=null) {
-    rassert(message != null);
+    // For no-op or side-effect-only interactions.
+    if (message == null) {
+        return;
+    }
 
     if (options == null) {
         options = {};
