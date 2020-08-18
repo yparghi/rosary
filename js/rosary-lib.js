@@ -469,9 +469,9 @@ class GameWorld {
         return this.isEndedBool;
     }
 
-    endGame(message) {
-        displayText(message + "<hr/>" + "<p>THE END</p>");
+    endGame(cutscene) {
         this.isEndedBool = true;
+        this.playCutscene(cutscene);
     }
 
     playCutscene(cutscene) {
@@ -497,7 +497,13 @@ class GameWorld {
             return;
         } else {
             this.currentCutscene = null;
-            this.switchPlayMode(PLAY_MODE_ENUM.NORMAL);
+            if (this.isEnded()) {
+                displayText(
+                    `<p>THE END</p>`,
+                    { scrollToTop: false, showLeadingHR: true, addTopPadding: true, showEnteredCommand: false});
+            } else {
+                this.switchPlayMode(PLAY_MODE_ENUM.NORMAL);
+            }
         }
     }
 
