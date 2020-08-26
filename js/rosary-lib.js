@@ -488,12 +488,19 @@ class GameWorld {
         this.playCutscene(cutscene);
     }
 
-    playCutscene(cutscene) {
+    playCutscene(cutscene, firstLineOptions=null) {
+        if (firstLineOptions === null) {
+            firstLineOptions = {
+                scrollToTop: true,
+                showLeadingHR: true,
+                addTopPadding: true
+            }
+        }
         this.currentCutscene = cutscene;
         this.switchPlayMode(PLAY_MODE_ENUM.CUTSCENE);
         displayText(
             this.currentCutscene.getNextLine(),
-            { scrollToTop: true, showLeadingHR: true, addTopPadding: true});
+            firstLineOptions);
         this.checkCutsceneState();
     }
 
