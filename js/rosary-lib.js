@@ -143,7 +143,11 @@ function performCommand(commandObj) {
         performLeave(commandObj);
     } else {
         displayError("Sorry, I don't know how to do that.");
+        return;
     }
+
+    world.turnCounter += 1;
+    world.runHooks();
 }
 
 
@@ -442,11 +446,12 @@ class GameWorld {
         this.gameName = gameName;
         this.state = {};
         this.inventory = [];
-        this.alerts = [];
+        this.hooks = [];
         this.introCutscene = null;
         this.initialRoom = null;
         this.currentRoom = null;
         this.displayHtml = "";
+        this.turnCounter = 0;
         this.paragraphCounter = 0;
         this.isEndedBool = false;
         this.playMode = PLAY_MODE_ENUM.NORMAL;
@@ -544,6 +549,19 @@ class GameWorld {
         this.playMode = newMode;
         focusKeyboard();
     }
+
+    runHooks() {
+        if (this.playMode != PLAY_MODE_ENUM.NORMAL) {
+            return;
+        }
+
+        this.hooks.forEach((hook) => {
+            if (hook.shouldRun()) {
+                hook.run();
+                hook.hasRun = true;
+            }
+        });
+    }
 }
 
 
@@ -613,7 +631,6 @@ class GameRoom extends GameObject {
         super(shortName);
         this.exits = [];
         this.objects = [];
-        this.entryHooks = [];
     }
 
     interactableObjectsInThisRoom() {
@@ -654,27 +671,7 @@ class GameRoom extends GameObject {
 
     doGo(commandObj) {
         world.currentRoom = this;
-        // TODO! hook text *BEFORE* exits text -- break up that logic?
-        let roomText = world.currentRoom.getDisplayText();
-
-        world.currentRoom.entryHooks.forEach((entryHook) => {
-            let hookText = entryHook();
-            if (hookText != null) {
-                roomText += "<br/>";
-                roomText += hookText;
-            }
-        });
-
-        // TODO(Yash): Is this the right place to fire alerts? Should it be more often?
-        world.alerts.forEach((alert) => {
-            let alertText = alert();
-            if (alertText != null) {
-                roomText += "<br/>";
-                roomText += alertText;
-            }
-        });
-
-        return roomText;
+        return world.currentRoom.getDisplayText();
     }
 }
 
@@ -736,6 +733,22 @@ class InventoryItem extends GameObject {
         return inv;
     }
 }
+
+
+class GameHook {
+    constructor() {
+        this.hasRun = false;
+    }
+
+    shouldRun() {
+        return false;
+    }
+
+    run() {
+        return null;
+    }
+}
+
 /////// END CLASSES
 
 
