@@ -96,7 +96,7 @@ function doInternalParsing(text) {
 // TODO: What if a 'look' command matches no object? It shouldn't just be
 // parsed as 'look' i.e. current room -- it should show an error.
 function parseCommandFromWords(words) {
-    parsedObj = new Object();
+    commandObj = new Object();
 
     verb = words[0];
     if (!VERB_TYPES.has(verb)) {
@@ -104,22 +104,22 @@ function parseCommandFromWords(words) {
         return;
     }
 
-    parsedObj.verb = VERB_TYPES.get(verb);
-    parsedObj.typedVerb = verb;
+    commandObj.verb = VERB_TYPES.get(verb);
+    commandObj.typedVerb = verb;
 
-    if (parsedObj.verb == "SAY") {
-        parsedObj.saidWord = words[1];
+    if (commandObj.verb == "SAY") {
+        commandObj.saidWord = words[1];
         identifyResult = identifyObjects(words.slice(2));
     } else {
         identifyResult = identifyObjects(words.slice(1));
     }
-    parsedObj.objOne = identifyResult.objOne;
-    parsedObj.objTwo = identifyResult.objTwo;
+    commandObj.objOne = identifyResult.objOne;
+    commandObj.objTwo = identifyResult.objTwo;
 
     if (identifyResult.error !== null) {
         displayError(identifyResult.error);
     } else {
-        performCommand(parsedObj);
+        performCommand(commandObj);
     }
 }
 
@@ -788,6 +788,8 @@ VERB_TYPES.set("use", "USE");
 VERB_TYPES.set("open", "USE");
 VERB_TYPES.set("search", "USE");
 VERB_TYPES.set("read", "USE");
+VERB_TYPES.set("put", "USE");
+VERB_TYPES.set("place", "USE");
 
 VERB_TYPES.set("get", "TAKE");
 VERB_TYPES.set("take", "TAKE");
