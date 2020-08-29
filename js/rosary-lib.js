@@ -771,6 +771,7 @@ const IGNORED_WORDS = [
     "a",
     "an",
     "the",
+    "back",  // e.g. "put bottle back"
 ];
 
 const VERB_TYPES = new Map();
