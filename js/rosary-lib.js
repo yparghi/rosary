@@ -760,7 +760,8 @@ class GameHook {
 
 
 
-/////// GRAMMAR CONSTANTS
+/////// CONSTANTS
+
 const IGNORED_WORDS = [
     "at",
     "to",
@@ -802,4 +803,8 @@ VERB_TYPES.set("leave", "LEAVE");
 
 VERB_TYPES.set("inv", "VIEW_INVENTORY");
 VERB_TYPES.set("inventory", "VIEW_INVENTORY");
-/////// END GRAMMAR CONSTANTS
+
+
+DEFAULT_NOTHING_INTERACTION = `Nothing happens!`;
+
+/////// END CONSTANTS
