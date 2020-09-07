@@ -191,7 +191,7 @@ function performUse(commandObj) {
     } else {
         // This is a little hacky, but at least it uses a constant.
         let interactResult = commandObj.objOne.doInteract(commandObj);
-        if (interactResult == DEFAULT_NOTHING_INTERACTION) {
+        if (interactResult == DEFAULT_NOTHING_INTERACTION && commandObj.objTwo != null) {
             interactResult = commandObj.objTwo.receiveInteract(commandObj);
         }
         displayText(interactResult);
