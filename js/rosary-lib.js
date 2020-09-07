@@ -189,7 +189,12 @@ function performUse(commandObj) {
     if (commandObj.objOne === null) {
         displayError("Failed to parse 'use' command!");
     } else {
-        displayText(commandObj.objOne.doInteract(commandObj));
+        // This is a little hacky, but at least it uses a constant.
+        let interactResult = commandObj.objOne.doInteract(commandObj);
+        if (interactResult == DEFAULT_NOTHING_INTERACTION) {
+            interactResult = commandObj.objTwo.receiveInteract(commandObj);
+        }
+        displayText(interactResult);
     }
 }
 
@@ -611,9 +616,12 @@ class GameObject {
         return true;
     }
 
-    // Should this supplant doTalk() and similar methods?
     doInteract(commandObj) {
-        return "It is unresponsive.";
+        return DEFAULT_NOTHING_INTERACTION;
+    }
+
+    receiveInteract(commandObj) {
+        return DEFAULT_NOTHING_INTERACTION;
     }
 
     doTake(commandObj) {
@@ -792,6 +800,7 @@ VERB_TYPES.set("search", "USE");
 VERB_TYPES.set("read", "USE");
 VERB_TYPES.set("put", "USE");
 VERB_TYPES.set("place", "USE");
+VERB_TYPES.set("give", "USE");
 
 VERB_TYPES.set("get", "TAKE");
 VERB_TYPES.set("take", "TAKE");
