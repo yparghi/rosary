@@ -660,7 +660,9 @@ class GameRoom extends GameObject {
             displayString += this.formatObjectsList("You see: ", this.objects);
         }
 
-        displayString += this.formatObjectsList("Exits are: ", this.exits);
+        if (this.exits.length > 0) {
+            displayString += this.formatObjectsList("Exits are: ", this.exits);
+        }
 
         return displayString;
     }
