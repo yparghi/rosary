@@ -99,13 +99,18 @@ function parseCommandFromWords(words) {
     commandObj = new Object();
 
     verb = words[0];
-    if (!VERB_TYPES.has(verb)) {
+    let isCustomCommand = world.hasCustomCommand(verb);
+    if (!isCustomCommand && !VERB_TYPES.has(verb)) {
         displayError("Unknown verb: " + verb);
         return;
     }
 
-    commandObj.verb = VERB_TYPES.get(verb);
     commandObj.typedVerb = verb;
+    if (isCustomCommand) {
+        commandObj.verb = verb.toUpperCase();
+    } else {
+        commandObj.verb = VERB_TYPES.get(verb);
+    }
 
     if (commandObj.verb == "SAY") {
         commandObj.saidWord = words[1];
@@ -118,6 +123,8 @@ function parseCommandFromWords(words) {
 
     if (identifyResult.error !== null) {
         displayError(identifyResult.error);
+    } else if (isCustomCommand) {
+        world.performCustomCommand(commandObj);
     } else {
         performCommand(commandObj);
     }
@@ -462,6 +469,7 @@ class GameWorld {
         this.playMode = PLAY_MODE_ENUM.NORMAL;
         this.currentCutscene = null;
         this.lastEnteredCommand = null;
+        this.customCommands = [];
     }
 
     addInv(invItem) {
@@ -574,8 +582,41 @@ class GameWorld {
             }
         });
     }
+
+    hasCustomCommand(name) {
+        for (let i = 0; i < this.customCommands.length; ++i) {
+            if (this.customCommands[i].name === name) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    addCustomCommand(command) {
+        this.customCommands.push(command);
+    }
+
+    performCustomCommand(commandObj) {
+        for (let i = 0; i < this.customCommands.length; ++i) {
+            if (this.customCommands[i].name.toUpperCase() === commandObj.verb) {
+                this.customCommands[i].doCommand(commandObj);
+                return;
+            }
+        }
+        throw new Error("No custom command found!: " + commandObj.verb);
+    }
 }
 
+
+class CustomCommand {
+    constructor(name) {
+        this.name = name;
+    }
+
+    doCommand(commandObj) {
+        // Abstract
+    }
+}
 
 class Cutscene {
     constructor(lines) {
