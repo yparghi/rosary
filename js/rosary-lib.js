@@ -533,7 +533,7 @@ class GameWorld {
             this.currentCutscene = null;
             if (this.isEnded()) {
                 displayText(
-                    `<p>THE END</p>`,
+                    `<p style="text-align:center;">THE END</p>`,
                     { scrollToTop: false, showLeadingHR: true, addTopPadding: true, showEnteredCommand: false});
             } else {
                 this.switchPlayMode(PLAY_MODE_ENUM.NORMAL);
@@ -844,6 +844,8 @@ VERB_TYPES.set("read", "USE");
 VERB_TYPES.set("put", "USE");
 VERB_TYPES.set("place", "USE");
 VERB_TYPES.set("give", "USE");
+VERB_TYPES.set("throw", "USE");
+VERB_TYPES.set("toss", "USE");
 
 VERB_TYPES.set("get", "TAKE");
 VERB_TYPES.set("take", "TAKE");
